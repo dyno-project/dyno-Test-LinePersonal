@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title></title>
+      <link rel="stylesheet" href="styles/kendo.common.min.css" />
+      <link rel="stylesheet" href="styles/kendo.default.min.css" />
+      <link rel="stylesheet" href="styles/kendo.mobile.all.min.css" />
+
+      <script src="js/jquery.min.js"></script>
+      <script src="js/kendo.all.min.js"></script>    
+  </head>
+  
+  <body>
+
+    <div data-role="view" data-init="initData"  data-title="進行量測" style="font-family:'Noto Sans TC';" data-use-native-scrolling="true" data-show="kendoViewReady" >
+
+      <div data-role="content" style="
+                                  background-color: black;
+                                  "> 
+
+        <p style="font-size:18px; color: white; margin-top:20px; margin-left:20px">1. 請確認<b> 目前</b> 所在的健身房</p>
+        <p id="所在健身房說明" style="font-size:16px; color: gray; width:80%; margin-left:40px;; margin-bottom:5px"></p>
+        
+        <div id="店面" class="店面陣列" align="center">
+          <a id="預設常用健身房標籤" style="font-size: 18px; color: white; background-color:gray; padding:10px;width: 80%" onclick=""></a>        
+        </div>           
+
+        <p style="font-size:18px; color: white; margin-left:20px; margin-top: 20px">2. 請按下按鈕，送出測量要求</p>      
+
+<!--        <p id="測量限制" style="font-size:16px; color:gray; text-align:left; margin-left:40px;width:80%">為讓更多人使用，距離上次量測須超過一小時，才能再度量測，謝謝您的合作。</p>         -->
+        <p id="上次測量時間" style="font-size:16px; color:gray; text-align:center">上次測量時間:</p> 
+        
+        <button id="開始測量按鈕" class="NotoSansFont" style="float:left; margin-left: 50px; font-size: 18px; color: white; background-color:red; padding:10px;border-radius:8px; border-style: none" onclick="送出要求測量()">開始測量</button> 
+        <button id="取消測量按鈕" class="NotoSansFont" style="float:right; margin-right: 50px; font-size: 18px; color: white; background-color:teal; padding:10px;border-radius:8px; border-style: none" onclick="取消測量()">取消測量</button>         
+        <br><br><br>
+        
+        <div id="第三步Div" style="display: none">
+          <p style="font-size:18px; color: white; margin:20px; margin-top: 20px">3. 請到 身體組成分析儀 上，進行測量</p> 
+          <p id="測量訊息" style="font-size:18px; color: white; margin-left:40px"></p>    
+          
+          <div id="loadingProgressBar" style="margin-left:20px; margin-right: 20px; width: 90%"></div>                
+          
+          <div style="height: 20px"></div>
+        </div>                
+        
+        <div id="查看報告Div" style="text-align: center; display: none">
+        <div style="height:20px"></div>
+        <a class="" style="font-size: 18px; color: white; background-color:red; padding:10px;border-radius:8px" onclick="查看報告()">查看報告</a> 
+        </div>
+             
+        <div style="height: 50px"></div>     
+           
+        <!-- Debug on phone -->
+        <hr>
+        <p id="debug1" style="font-size:14px; color: gray; margin-left:20px"></p>           
+        <p id="debug2" style="font-size:14px; color: gray; margin-left:20px"></p>   
+               
+      </div>     
+    </div>
+    
+    <script>
+        
+      var 上次使用店面編號 = localStorage.getItem("上次使用店面編號") || 0; // 先不用到if null then 0
+      var 上次量測時間    = localStorage.getItem("上次量測時間") || 0; // if null then 0  
+      
+      var 上次測量時間Str = (上次量測時間==0)?"2020-01-01T00:00:00+8:00":上次量測時間;
+      
+      var selectedStoreNum = 上次使用店面編號;
+      
+
+      
+      function kendoViewReady() {
+        console.log( "ready!" );
+        
+        $("#預設常用健身房標籤").text("啟德 "+預設常用健身房); 
+        $("#所在健身房說明").text("如果目前不在 "+預設常用健身房+ " ，請到個人資料(首頁右上角圖示)修改預設常用健身房，再回來測量。");
+//        for (var i=0; i<店面名稱.length;i++) {
+//          
+//          var 按鈕顏色 = (i==上次使用店面編號)?"red":"gray";
+//          // 店面 0, 3, 6, 9, ...
+//          if (i%3 == 0 || i%3 == 1 ) {
+//            var storeToadd = '<a id="'+"店面"+i.toString()+'" style="margin-left:20px;font-size: 18px; color: white; background-color:'+按鈕顏色+'; padding:10px;border-radius:8px" onclick="selectStore('+i.toString()+')">'+店面名稱[i]+'</a>';
+//            //console.log(storeToadd);
+//            $("#店面").append(storeToadd);        
+//          } else { // 店面 1,2,4,5,7,8,...
+//            var storeToadd = '<a id="'+"店面"+i.toString()+'" style="margin-left:20px;font-size: 18px; color: white; background-color:'+按鈕顏色+'; padding:10px;border-radius:8px" onclick="selectStore('+i.toString()+')">'+店面名稱[i]+'</a>';
+//            $("#店面").append(storeToadd);      
+//            $("#店面").append("<br><br><br>");             
+//          }          
+//        }
+//        
+//        if (店面名稱.length%3 != 2 ) {
+//            $("#店面").append("<br><br><br>");   
+//        }
+        
+        $("#開始測量按鈕").attr("disabled", false);       
+        $("#取消測量按鈕").attr("disabled", true);  
+        $("#取消測量按鈕").css("background-color", "gray");         
+        
+        var tmpTimeNow     = new Date(toISOStringWithTimeZone());
+        var tmpTimeNowInMs = tmpTimeNow.getTime();
+        $("#debug1").text("現在時間:" +toISOStringWithTimeZone()+" "+tmpTimeNowInMs.toString());
+        
+        var tmpTime     = new Date(上次測量時間Str);
+        var tmpTimeInMs = tmpTime.getTime();  
+        var 轉換時間Array = 上次測量時間Str.split("T");
+        var 轉換時間Str   = "上次量測時間: "+轉換時間Array[0]+" "+轉換時間Array[1].substr(0, 轉換時間Array[1].length-6);
+        var tmpTimeInMs = (tmpTimeInMs==NaN)? "NaN":"TW";
+        
+        
+        $("#上次測量時間").text(轉換時間Str+"_"+tmpTimeInMs);
+        $("#loadingProgressBar").kendoProgressBar({
+          animation: 500,
+          change: onChange,
+          complete: onComplete
+        });  
+      }
+        //aa.progressWrapper.css({"background-color": "#e32424", "border-color": "#e32424"});
+        
+      function onChange(e) {
+        this.progressWrapper.css({"background-color": "#e32424", "border-color": "#e32424"});         
+      }
+      function onComplete(e) {
+        this.progressWrapper.css({"color": "white"});         
+        this.progressStatus.text("完成");        
+      }      
+      
+    
+      function selectStore(storeNumber){
+        console.log("selectStore", storeNumber);
+        selectedStoreNum = storeNumber;
+        for (var i=0; i<店面名稱.length;i++) {
+          if (i==storeNumber) {
+            $("#店面"+i.toString()).css("background-color", "red");
+          } else {
+            $("#店面"+i.toString()).css("background-color", "gray");
+          }
+        } 
+      }
+      
+      var checkStatusInterval;
+      async function 送出要求測量(){
+        console.log("送出要求測量", selectedStoreNum, 機器序號[selectedStoreNum]);
+        
+        // 檢查距離上次量測時間
+        var tmpTimeNow     = new Date(toISOStringWithTimeZone());
+        var tmpTimeNowInMs = tmpTimeNow.getTime();
+        $("#debug1").text("現在時間:" +toISOStringWithTimeZone()+" "+tmpTimeNowInMs.toString());
+        
+        var tmpLastTime     = new Date(上次測量時間Str);
+        var tmpLastTimeInMs = tmpLastTime.getTime();  
+
+        
+//        if ( (tmpTimeNowInMs-tmpLastTimeInMs) < 60000 ) {
+//          alert("為讓更多人使用，也是保障您的權益，距離上次量測須超過一小時，才能再度量測，謝謝您的合作。");
+//          return;
+//        }
+         
+        // Check if Device is in use
+        paramToSend = "?API=31" + "&CustomerId=啟德&StoreId="+$("#預設常用健身房").val();      
+        var res = await callAPI(paramToSend, '讀取機器狀態');
+        console.log(res);
+        var machineStatus = res.split(",");
+        var 目前機器狀態 = machineStatus[1];
+        var 機器更新時間 = machineStatus[2];
+        console.log(目前機器狀態, 機器更新時間);        
+        
+        if ((Date.now()- 機器更新時間) > 5*60*1000) {
+          alert("抱歉，此機器未連上雲端，請檢查機器是否有連上網路");
+          return;          
+        }
+        if (目前機器狀態.substr(0,3) =="使用中"){
+          alert("抱歉，此機器已有人要求量測。請耐心等候");
+          return;
+        }
+        
+        
+        if (confirm("為了您的權益，請檢查是在啟德 "+預設常用健身房+" 身體組成分析儀 序號:"+機器序號+"上進行量測。\n\n序號可在機器上查對")) { 
+          $("#開始測量按鈕").attr("disabled", true);
+          $("#開始測量按鈕").css("background-color", "gray"); 
+          
+          $("#第三步Div").show();
+          $("#測量訊息").text("接受資料");
+          console.log("call API 送出要求測量");
+                    
+          $("#取消測量按鈕").attr("disabled", false);  
+          $("#取消測量按鈕").css("background-color", "red");    
+          
+          $(".km-back").css("visibility", "hidden");
+        
+          paramToSend = "?API=20&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房+"&PhoneNumber="+$("#formUserPhone").val();
+          console.log(paramToSend);           
+          var res = await callAPI(paramToSend, '讀取店面名稱');
+          console.log(res); 
+          //店面名稱 = JSON.parse(res);
+         
+          
+//          啟動模擬機();
+//          $("#loadingProgressBar").data("kendoProgressBar").value(1);
+          checkStatusInterval = setInterval( checkMeasurementStatus, 5000);      
+           
+        } else {
+          console.log("放棄測量");
+        }
+      }  
+      
+    async function 取消測量(){
+        console.log("取消測量");
+        clearInterval(checkStatusInterval);   
+        
+        // 透過 ASPI=21 取消 量測要求
+        paramToSend = "?API=21&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+        var res = await callAPI(paramToSend, '');
+        var 取消量測回覆=res;
+        console.log(取消量測回覆); 
+        $("#測量訊息").text(取消量測回覆);
+        
+        $(".km-back").css("visibility", "visible");
+      
+        app.navigate("#:back");
+      }
+      
+      
+      var measurementStatusSet= [
+        "等待機器回應", "等待機器選擇", "等待機器要求資料", "等待機器確認資料", "等待機器登入", "等待啟動量測體重", "開始量測體重", "體重量測完成", "檢查級板", "檢查級板 OK", "開始身體組成量測", "身體組成量測完成"
+      ];
+      
+      async function checkMeasurementStatus(){
+        paramToSend = "?API=22&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+        var res = await callAPI(paramToSend, '');
+        var 現在量測狀態=res;
+        console.log(現在量測狀態); 
+        $("#測量訊息").text(現在量測狀態);
+        
+        var pb = $("#loadingProgressBar").data("kendoProgressBar");
+        switch (現在量測狀態){
+          case "等待機器回應":
+            pb.value(5);
+            break;
+          case "等待機器選擇":
+            pb.value(10);
+            break;
+          case "等待機器要求資料":
+            pb.value(15);
+            break;
+          case "等待機器確認資料":
+            pb.value(20);
+            break;
+          case "等待機器登入":
+            pb.value(25);
+            break;
+          case "等待啟動量測體重":
+            pb.value(25);
+            break;
+          case "開始量測體重":
+            pb.value(30);
+            break;
+          case "體重量測完成":
+            pb.value(50);            
+            break;
+          case "檢查級板":
+            pb.value(55);
+            break;
+          case "檢查級板 OK":
+            pb.value(60);
+            break;
+          case "開始身體組成量測":
+            pb.value(65);
+            break;
+          case "身體組成量測完成":
+            pb.value(100);
+            clearInterval(checkStatusInterval);             
+            var nowDateTimeStr = toISOStringWithTimeZone();
+            localStorage.setItem("上次量測時間", nowDateTimeStr);
+            $("#查看報告Div").show(); 
+            $("#取消測量按鈕").attr("disabled", true);  
+            $("#取消測量按鈕").css("background-color", "gray");  
+            
+            // 移除已完成的 量測要求
+            // ugly fix 避免在 API 還在用 量測要求 時就刪除掉 
+            setTimeout(async function(){
+              paramToSend = "?API=23&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+              var res = await callAPI(paramToSend, '');            
+              console.log(res)}, 500);         
+            
+            break;   
+          case "機台要求取消":
+            clearInterval(checkStatusInterval);             
+            alert("機台端取消量測"); 
+            paramToSend = "?API=23&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+            var res = await callAPI(paramToSend, ''); 
+            console.log(res);
+            app.navigate("#:back");  
+            break;
+
+          case "機台已有人在使用":
+            clearInterval(checkStatusInterval);             
+            alert("機台已有人在使用"); 
+            paramToSend = "?API=23&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+            var res = await callAPI(paramToSend, ''); 
+            console.log(res);
+            app.navigate("#:back");       
+            break;            
+            
+          default:
+            console.log("未知量測狀態");
+            clearInterval(checkStatusInterval);   
+            alert("未知量測狀態"); 
+            paramToSend = "?API=23&UserId="+userId[1]+"&CustomerId=啟德&StoreId="+預設常用健身房;
+            var res = await callAPI(paramToSend, ''); 
+            console.log(res);
+            app.navigate("#:back");       
+            break;              
+        }
+      }
+        
+      async function 查看報告(){
+        console.log("查看報告");
+        $(".km-back").css("visibility", "visible");
+        app.navigate("#:back");
+        
+        paramToSend = paramToSend = "?API=32" + "&UserId=" + $("#formUserPhone").val(); //userId[1];
+        var res = await callAPI(paramToSend, '讀取量測記錄');
+        var 所有量測數據=JSON.parse(res);
+        console.log(所有量測數據);    
+
+        var dataTemp=[];
+        for (var i=0; i<所有量測數據.length; i++ ) {
+          var 時間Date = new Date(所有量測數據[i].量測時間);
+          var 時間Str  = 時間Date.toLocaleString();           
+          var 卡片 = {
+            "量測記錄時間": 時間Str, //所有量測數據[i].量測時間,              
+            "綜合評價":    所有量測數據[i].HealthScore,
+            "量測紀錄圖片": 所有量測數據[i].PicUrl,              
+            "url": "2-views/量測報告.html?PicUrl="+所有量測數據[i].PicUrl,
+            "section": "A"             
+          };
+          dataTemp.push(卡片); 
+        }
+
+        measurementSource.success(dataTemp);
+        
+        measurementSource.read(); // 產生 sorting 
+
+        if (dataTemp.length==0) {
+          $("#量測記錄title").text("尚無量測記錄");
+        }else {
+          $("#量測記錄title").text("量測記錄");
+        }              
+      }
+      
+      
+      function toISOStringWithTimeZone() {
+          var nowDate = new Date();        
+          var tzo = - nowDate.getTimezoneOffset(),
+              dif = tzo >= 0 ? '+' : '-',
+              pad = function(num) {
+                  var norm = Math.floor(Math.abs(num));
+                  return (norm < 10 ? '0' : '') + norm;
+              };
+
+          return nowDate.getFullYear() +
+              '-' + pad(nowDate.getMonth() + 1) +
+              '-' + pad(nowDate.getDate()) +
+              'T' + pad(nowDate.getHours()) +
+              ':' + pad(nowDate.getMinutes()) +
+              ':' + pad(nowDate.getSeconds()) +
+              dif + pad(tzo / 60) +
+              ':' + pad(tzo % 60);
+      }
+       
+     
+      //== 以下是模擬機
+      var measurementStatusMsg="接受資料";
+      var measurementStatusMsgBank= [
+        "請站上機器", "量測體重", "量測身體組成 50%", "量測身體組成 90%", "量測身體組成 完成", "資料上傳中", "資料上傳完成"
+      ];
+      
+      function 啟動模擬機(){    
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[0]),  1000);   
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[1]),  2000);   
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[2]),  3000);        
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[3]),  4000);   
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[4]),  5000);   
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[5]),  6000);        
+        setTimeout( (() => measurementStatusMsg = measurementStatusMsgBank[6]),  7000);    
+        
+        //setTimeout( (() => clearInterval(checkStatusInterval)), 14100);           
+      }
+        
+//      function checkMeasurementStatus(){
+//        console.log(measurementStatusMsg);
+//        $("#測量訊息").text(measurementStatusMsg);  
+//        if (measurementStatusMsg == measurementStatusMsgBank[0]) var pbValue = 20;
+//        if (measurementStatusMsg == measurementStatusMsgBank[1]) var pbValue = 40;
+//        if (measurementStatusMsg == measurementStatusMsgBank[2]) var pbValue = 60;
+//        if (measurementStatusMsg == measurementStatusMsgBank[3]) var pbValue = 70;
+//        if (measurementStatusMsg == measurementStatusMsgBank[4]) var pbValue = 80;
+//        if (measurementStatusMsg == measurementStatusMsgBank[5]) var pbValue = 90;        
+//        if (measurementStatusMsg == measurementStatusMsgBank[6]) var pbValue = 100;            
+//        
+//        var pb = $("#loadingProgressBar").data("kendoProgressBar");
+//        pb.value(pbValue);
+//
+//        
+//        if (measurementStatusMsg == measurementStatusMsgBank[measurementStatusMsgBank.length-1]){
+//          clearInterval(checkStatusInterval);
+//          console.log("模擬完成");
+//          var nowDateTimeStr = toISOStringWithTimeZone();
+//          localStorage.setItem("上次量測時間", nowDateTimeStr);
+//          localStorage.setItem("上次使用店面編號", selectedStoreNum);
+//          $("#查看報告Div").show(); 
+//          $("#取消測量按鈕").attr("disabled", true);  
+//          $("#取消測量按鈕").css("background-color", "gray");              
+//        }
+//      }
+
+    </script>
+    
+    <script>
+      //以下必須 remark 掉，不然會有問題
+      //var app = new kendo.mobile.Application(document.body, { skin: "nova" });
+    </script>
+
+  </body>
+</html>

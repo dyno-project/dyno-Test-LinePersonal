@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <title></title>
+      <link rel="stylesheet" href="styles/kendo.common.min.css" />
+      <link rel="stylesheet" href="styles/kendo.default.min.css" />
+      <link rel="stylesheet" href="styles/kendo.mobile.all.min.css" />
+
+      <script src="js/jquery.min.js"></script>
+      <script src="js/kendo.all.min.js"></script>    
+  </head>
+  
+  <body>
+
+    <div data-role="view" data-show="kendoReady()"  data-title="量測報告" style="text-align: center;font-family: 'Noto Sans TC'" data-use-native-scrolling="true">
+
+      <div data-role="content" style="background-color: white;"> 
+
+        <a id="週按鈕" style="font-size: 18px; color: white; float:left;margin-left:15px; margin-top:20px; background-color:#FF4350; padding:5px;border-radius:8px; width:50px" onclick="displayChartsInWeek()">週</a> 
+        
+        <a id="月按鈕" style="font-size: 18px; color: white; float:left;margin-left:15px;  margin-top:20px; background-color:lightgray; padding:5px;border-radius:8px; width:50px" onclick="displayChartsInMonth()">月</a>   
+              
+        <a id="全部按鈕" style="font-size: 18px; color: white; float:left;margin-left:15px;  margin-top:20px; background-color:lightgray
+        ; padding:5px;border-radius:8px; width:50px" onclick="displayChartsInAll()">全部</a> 
+        
+        <div style="height: 60px"></div>
+           
+        <hr>
+
+          <div style="height:10px"></div>
+          <div>
+            <label id="chart_range" style="margin: auto">日期時間</label>
+          </div>
+  
+          <div style="float:left;width:100px;margin-top:-42px">
+            <a id="left-arrow" style="font-size: 48px; color:#FF4350; float:left; margin-left:10px; padding:10px;" onclick="chartMovePrev()"><i class="fa fa-caret-left" aria-hidden="true"></i></a> 
+          </div>
+          <div style="float:right;width:100px;margin-top:-42px">            
+            <a id="right-arrow" style="font-size: 48px; color:#FF4350; float:right;margin-right:10px; padding:10px;border-radius:8px" onclick="chartMoveNext()"><i class="fa fa-caret-right" aria-hidden="true"></i></a> 
+          </div>
+                 
+        <canvas id="myChartHeight" width="400px" height="200px" style="margin:10px"></canvas>   
+          
+        <canvas id="myChartWeight" width="400px" height="200px" style="margin:10px"></canvas>   
+        
+        <canvas id="myChartBMI" width="400px" height="200px" style="margin:10px"></canvas>   
+                
+<!--
+        <a class="" style="font-size: 26px; color:#FF4350; float:left;margin-left:100px; font-weight:bold; background-color:lightgray
+        ; padding:10px;border-radius:8px " onclick=""><</a>    
+        
+        <a class="" style="font-size: 26px; color:#FF4350; float:right;margin-right:100px; font-weight:bold; background-color:lightgray
+        ; padding:10px;border-radius:8px " onclick="">></a>   
+-->
+                 
+      </div>        
+    </div>
+    
+    <script>
+      // 時區時間差
+      var timeZoneOffset = new Date().getTimezoneOffset();
+      console.log(timeZoneOffset); // if offset equals -60 then the time zone offset is UTC+01
+                                   // In Taiwan, offset is -480 min
+      var UTC_delta = timeZoneOffset/(-60); // +8 in Taiwan
+      
+      var hrefString = window.location.href;
+      var inputParamString = hrefString.split("?");
+      var inputParam = inputParamString[2].split("&")
+      
+        
+      var keyOfMeasurements;
+      var selTime;
+      var selTimeStr;    
+      var selMonth;
+      var selDate;
+      var selDay;    
+      var chartCenterDate;
+      
+      var weekDataForCharts=[];    
+      
+      var weekDataForHeight=[];      
+      var weekDataForWeight=[];      
+      var weekDataForBMI=[];  
+      
+      var monthDataForHeight=[];      
+      var monthDataForWeight=[];      
+      var monthDataForBMI=[]; 
+      
+      var allDataForHeight=[];      
+      var allDataForWeight=[];      
+      var allDataForBMI=[]; 
+      
+      var weekLabelsforChart=[];      
+      var monthLabelsforChart=[];
+      var allLabelsforChart=[];
+
+      var ctx;
+      var myChartHeight;      
+      var myChartWeight;      
+      var myChartBMI;      
+      
+      var chartRange=0; //0:week, 1:month, 2:all
+      var 所有量測數據;
+      
+      //==================================
+      // simualte data for test 
+//      weekLabelsforChart=[
+//        '2022/03/21', '2022/03/22', '2022/03/23', '2022/03/24', '2022/03/25', '2022/03/26', '2022/03/27'
+//      ];
+//
+//      for (var i=0; i<30;i++) monthLabelsforChart[i]="";
+//      monthLabelsforChart[0]  = '2022/03/01';
+//      monthLabelsforChart[29] = '2022/03/30';
+      
+      
+      // simulate for a year
+      for (var i=0; i<365;i++) allLabelsforChart[i]="";        
+
+      // rnd week data for test
+      for (var i=0; i<7;i++){
+        weekDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+      }
+      //console.log(weekDataForHeight);
+
+      // rnd month data for test
+      for (var i=0; i<30;i++){
+        monthDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+      }
+      //console.log(monthDataForHeight); 
+      
+      // rnd year data for test all
+      for (var i=0; i<365;i++){
+        allDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+      }
+      //console.log(allDataForHeight);       
+      //=================================
+      
+      // Kendo is ready
+      function kendoReady(){
+        console.log("Show Data", inputParam);
+        console.log("取得量測記錄");
+      
+        讀取量測數據ForChart();                 
+     
+      }
+            
+      async function 讀取量測數據ForChart() {
+        var paramToSend = "?API=33" + "&UserId=" + $("#formHWBMI_ID").val(); 
+        console.log(paramToSend);
+        var resStr = await callAPI(paramToSend, '讀取量測記錄'); //callAPI defined in functions.js
+
+        console.log(inputParam);
+        所有量測數據=JSON.parse(resStr); 
+        console.log(所有量測數據); 
+        
+        var keys=inputParam[1].split('_');
+        chartCenterDate=parseInt(keys[1]);
+        getDataOfAweek(chartCenterDate);
+        
+        
+        //console.log("畫圖")
+        drawChart();  
+
+      }
+     
+      // Update charts examples
+      // myChartHeight.options.scales.x.display=true;
+      // myChartHeight.update()
+      
+      // myChartHeight.options.scales.y.min=40
+      // myChartHeight.update() 
+      
+      function displayChartsInWeek(){
+        console.log("Display Charts in week range");
+        chartRange=0;
+        $("#週按鈕").css("background-color","#FF4350");
+        $("#月按鈕").css("background-color","lightgray");
+        $("#全部按鈕").css("background-color","lightgray");   
+        
+        $("#left-arrow").css("color","#FF4435");
+        $("#right-arrow").css("color","#FF4435");
+        
+        getDataOfAweek(chartCenterDate);
+        $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
+        
+        myChartHeight.data.labels=weekLabelsforChart;
+        myChartWeight.data.labels=weekLabelsforChart;
+        myChartBMI.data.labels=weekLabelsforChart;
+        
+        myChartHeight.data.datasets[0].data=weekDataForHeight; 
+        myChartWeight.data.datasets[0].data=weekDataForHeight; 
+        myChartBMI.data.datasets[0].data=weekDataForHeight; 
+        
+        myChartHeight.options.scales.x.display=true;
+        myChartWeight.options.scales.x.display=true;
+        myChartBMI.options.scales.x.display=true;
+        
+        myChartHeight.update();                 
+        myChartWeight.update();                 
+        myChartBMI.update();                 
+        
+      }
+
+      function displayChartsInMonth(){
+        console.log("Display Charts in month range");
+        chartRange=1;
+        $("#週按鈕").css("background-color","lightgray");
+        $("#月按鈕").css("background-color","#FF4350");
+        $("#全部按鈕").css("background-color","lightgray");
+        
+        $("#left-arrow").css("color","#FF4435");
+        $("#right-arrow").css("color","#FF4435");        
+        
+        getDataOfAmonth(chartCenterDate);
+        $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
+        myChartHeight.data.labels=monthLabelsforChart;
+        myChartWeight.data.labels=monthLabelsforChart;
+        myChartBMI.data.labels=monthLabelsforChart;
+        
+        myChartHeight.data.datasets[0].data=monthDataForHeight;
+        myChartWeight.data.datasets[0].data=monthDataForWeight;
+        myChartBMI.data.datasets[0].data=monthDataForBMI;
+        
+        myChartHeight.options.scales.x.display=false;        
+        myChartWeight.options.scales.x.display=false;        
+        myChartBMI.options.scales.x.display=false;        
+      
+        myChartHeight.update();          
+        myChartWeight.update();          
+        myChartBMI.update();                 
+      }
+      
+      function displayChartsInAll(){
+        console.log("Display Charts in all");
+        chartRange=3;
+        $("#週按鈕").css("background-color","lightgray");
+        $("#月按鈕").css("background-color","lightgray");
+        $("#全部按鈕").css("background-color","#FF4350");     
+        
+        $("#left-arrow").css("color","lightgray");
+        $("#right-arrow").css("color","lightgray");        
+        
+        getDataOfAll();
+        
+        $("#chart_range").text(allLabelsforChart[0].substr(0,10)+" ~ "+allLabelsforChart[allLabelsforChart.length-1].substr(0,10));        
+        
+        myChartHeight.data.labels=allLabelsforChart;
+        myChartWeight.data.labels=allLabelsforChart;
+        myChartBMI.data.labels=allLabelsforChart;
+        
+        myChartHeight.data.datasets[0].data=allDataForHeight;
+        myChartWeight.data.datasets[0].data=allDataForWeight;
+        myChartBMI.data.datasets[0].data=allDataForBMI;
+                
+        myChartHeight.options.scales.x.display=false; 
+        myChartWeight.options.scales.x.display=false; 
+        myChartBMI.options.scales.x.display=false; 
+        
+        myChartHeight.update();        
+        myChartWeight.update();        
+        myChartBMI.update();        
+      }      
+      
+      function chartMovePrev(){
+        if (chartRange==0) { // move prev one day
+          console.log("Move to Prev day");
+          
+          //simulated data
+          //weekDataForHeight.unshift(Math.floor(Math.random()*50)/10+170);
+          //weekDataForHeight.pop();
+          //myChartHeight.update();                
+          
+          //一次更新整週資料，會失去 chart 移動效果          
+          //chartCenterDate -=86400000;
+          //getDataOfAweek(chartCenterDate);
+          //myChartHeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
+          //myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
+          //myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
+          //myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
+          //myChartBMI.data.label=weekLabelsforChart;              //必要，不然 update()無效
+          //myChartBMI.data.datasets[0].data=weekDataForBMI;       //必要，不然 update()無效          
+          //
+          //$("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
+          //myChartHeight.update();
+          //myChartWeight.update();
+          //myChartBMI.update();
+          
+          // 取前一天資料
+          getWeekDataPrevDay(); 
+          
+          $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));       
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
+          
+        } else if (chartRange==1) { // move prev one week
+          console.log("Move to Prev week");  
+          for (var i=0; i<7; i++) getMonthDataPrevDay(); 
+          
+          $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();                   
+        }
+        
+      }
+      
+      function chartMoveNext(){
+        if (chartRange==0) { // move next one day
+          console.log("Move to Next Day");
+          //simulated data
+          //weekDataForHeight.push(Math.floor(Math.random()*50)/10+170);
+          //weekDataForHeight.shift();
+          //myChartHeight.update();      
+          
+          getWeekDataNextDay(); 
+          
+          $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
+          
+        } else if (chartRange==1) { // move next one week
+          console.log("Move to Next week");          
+          for (var i=0; i<7;i++) getMonthDataNextDay();
+          
+          $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
+          myChartHeight.update();          
+          myChartWeight.update();          
+          myChartBMI.update();           
+        }
+                
+      }      
+      
+      function getWeekDataPrevDay(){
+        chartCenterDate -=86400000;
+        selTime = new Date(chartCenterDate-86400000*3 - UTC_delta*3600000);
+        matchFullDate=selTime.toISOString().substr(0,10);
+        //console.log(matchFullDate);          
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            matched=true;
+            //console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          //console.log("not matched");
+        }          
+
+        if (chartRange==0){
+          weekDataForHeight.unshift(newDataForHeight);          
+          weekDataForWeight.unshift(newDataForWeight);          
+          weekDataForBMI.unshift(newDataForBMI); 
+          weekLabelsforChart.unshift(matchFullDate);
+          weekDataForHeight.pop();          
+          weekDataForWeight.pop();          
+          weekDataForBMI.pop(); 
+          weekLabelsforChart.pop();                         
+        }         
+      }
+      
+      function getWeekDataNextDay(){
+        chartCenterDate +=86400000;
+        selTime = new Date(chartCenterDate+86400000*3 - UTC_delta*3600000);
+        matchFullDate=selTime.toISOString().substr(0,10);        
+        //console.log(matchFullDate);          
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            matched=true;
+            //console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          //console.log("not matched");
+        }          
+
+        if (chartRange==0){
+          weekDataForHeight.push(newDataForHeight);          
+          weekDataForWeight.push(newDataForWeight);          
+          weekDataForBMI.push(newDataForBMI); 
+          weekLabelsforChart.push(matchFullDate);
+          weekDataForHeight.shift();          
+          weekDataForWeight.shift();          
+          weekDataForBMI.shift(); 
+          weekLabelsforChart.shift();                        
+        } 
+      }
+      
+      
+      function getMonthDataPrevDay(){
+        chartCenterDate -=86400000;
+        monthBeginDate= new Date(monthLabelsforChart[0].substr(0,10));
+        selTime = new Date(monthBeginDate.getTime() - 86400000);
+        matchFullDate=selTime.toISOString().substr(0,10);
+        //console.log(matchFullDate);          
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        var newMeasureTime;
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newMeasureTime  = 所有量測數據[rec].measure_time;
+            matched=true;
+            //console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          newMeasureTime  = matchFullDate;
+          //console.log("not matched");
+        }          
+
+        monthDataForHeight.unshift(newDataForHeight);          
+        monthDataForWeight.unshift(newDataForWeight);          
+        monthDataForBMI.unshift(newDataForBMI); 
+        monthLabelsforChart.unshift(newMeasureTime);
+        monthDataForHeight.pop();          
+        monthDataForWeight.pop();          
+        monthDataForBMI.pop(); 
+        monthLabelsforChart.pop();                         
+                
+      }
+            
+
+      function getMonthDataNextDay(){
+        chartCenterDate +=86400000;
+        monthEndDate= new Date(monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
+        selTime = new Date(monthEndDate.getTime() + 86400000);
+        matchFullDate=selTime.toISOString().substr(0,10);
+        //console.log(matchFullDate);         
+
+        var matched=false;  
+        var newDataForHeight;
+        var newDataForWeight;
+        var newDataForBMI;
+        var newMeasureTime;        
+        for (var rec in 所有量測數據) {
+
+          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
+            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
+            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newMeasureTime  = 所有量測數據[rec].measure_time;            
+            matched=true;
+            //console.log("matched");
+          }            
+        }
+
+        if (!matched) {
+          newDataForHeight=null;
+          newDataForWeight=null;
+          newDataForBMI   =null; 
+          newMeasureTime  = matchFullDate;
+          //console.log("not matched");
+        }          
+
+
+        monthDataForHeight.push(newDataForHeight);          
+        monthDataForWeight.push(newDataForWeight);          
+        monthDataForBMI.push(newDataForBMI); 
+        monthLabelsforChart.push(newMeasureTime);
+        monthDataForHeight.shift();          
+        monthDataForWeight.shift();          
+        monthDataForBMI.shift(); 
+        monthLabelsforChart.shift();                        
+
+      }
+            
+      
+      function getDataOfAweek(reqDate){
+        keyOfMeasurements=Object.keys(所有量測數據);      
+        weekLabelsforChart=[];
+        weekDataForHeight=[];
+        weekDataForWeight=[];
+        weekDataForBMI=[];
+        for (var i=-3; i<4; i++) { // 從選擇日前四天到後兩天
+          selTime = new Date(reqDate - UTC_delta*3600000 + i*86400000);          
+          matchFullDate= matchFullDate = selTime.toISOString().substr(0,10);
+          //console.log(matchFullDate);
+                
+          var matched=false;          
+          for (var rec in 所有量測數據) {
+
+            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+              weekLabelsforChart.push(所有量測數據[rec].measure_time);
+              
+              weekDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
+              weekDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
+              weekDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+              matched=true;
+            }            
+          }
+          if (!matched) {
+            weekLabelsforChart.push(matchFullDate);
+            weekDataForHeight.push(null);          
+            weekDataForWeight.push(null);          
+            weekDataForBMI.push(null);          
+          }
+        }
+        
+        console.log(weekDataForHeight);        
+        console.log(weekDataForWeight);        
+        console.log(weekDataForBMI);        
+      }
+      
+      function getDataOfAmonth(reqDate){
+        keyOfMeasurements=Object.keys(所有量測數據);
+        monthLabelsforChart=[];
+        monthDataForHeight=[];
+        monthDataForWeight=[];
+        monthDataForBMI=[];     
+        
+        for (var i=-15; i<16; i++) { 
+          selTime = new Date(reqDate - UTC_delta*3600000+ i*86400000);
+          //console.log(selTime.toISOString());
+          matchFullDate = selTime.toISOString().substr(0,10);
+          //console.log(matchFullDate);
+                
+          var matched=false;          
+          for (var rec in 所有量測數據) {
+
+            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+              
+              monthLabelsforChart.push(所有量測數據[rec].measure_time);
+              
+              monthDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
+              monthDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
+              monthDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+              matched=true;
+            }            
+          }
+          if (!matched) {
+            monthLabelsforChart.push(matchFullDate);
+            monthDataForHeight.push(null);          
+            monthDataForWeight.push(null);          
+            monthDataForBMI.push(null);          
+          }
+        }
+        
+        console.log(monthDataForHeight);        
+        console.log(monthDataForWeight);        
+        console.log(monthDataForBMI);        
+      }
+      
+
+      function getDataOfAll(){
+      
+        allLabelsforChart=[];
+        allDataForHeight=[];
+        allDataForWeight=[];
+        allDataForBMI=[];
+        
+        for (var rec in 所有量測數據) {
+
+            allLabelsforChart.push(所有量測數據[rec].measure_time);
+          
+            allDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
+            allDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
+            allDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+                     
+        }
+
+        console.log(allLabelsforChart);        
+        console.log(allDataForHeight);        
+        console.log(allDataForWeight);        
+        console.log(allDataForBMI);        
+      }
+            
+      function drawChart(){
+        
+        $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
+                
+        ctxH = $('#myChartHeight');
+        myChartHeight = new Chart(ctxH, {           
+          type: 'line',
+          data: {
+            //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            labels: weekLabelsforChart,
+            datasets: [{
+              backgroundColor: [
+                'rgba(99, 128, 64, 0.9)'
+              ],
+              label: '身高(公分)',
+              cubicInterpolationMode: 'monotone',                
+              data: weekDataForHeight
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                display:true,
+                  ticks: {
+                    count:7,
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                      if (chartRange==0) {
+                        if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, 5);
+                        else return '';
+                      } 
+                    }
+                  }
+              },
+              y: {
+//                  ticks: {
+//                    callback: function(value, index, ticks) {
+//                        return value+'公分';
+//                    }
+//                  }
+              }                
+            }
+          }            
+        });    
+
+        ctxW = $('#myChartWeight');
+        myChartWeight = new Chart(ctxW, {
+          type: 'line',
+          data: {
+            //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            labels: weekLabelsforChart,
+            datasets: [{
+              backgroundColor: [
+                'rgba(255, 99, 132, 0.9)'
+              ],
+              label: '體重(公斤)',
+              cubicInterpolationMode: 'monotone',
+              data: weekDataForWeight
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                display:true,
+                  ticks: {
+                    count:7,
+                    callback: function(value, index, ticks) {
+                      if (chartRange==0) {
+                        if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, 5);
+                        else return '';
+                      }                      
+                    }
+                  }
+              },
+              y: {           
+                ticks:{
+//                  count:10
+//                    callback: function(value, index, ticks) {
+//                        return ' '+value;
+//                    }
+                }
+              }                
+            }
+          } 
+        });
+
+        ctxB = $('#myChartBMI');
+        myChartBMI = new Chart(ctxB, {
+          type: 'line',
+          data: {
+            //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
+            labels: weekLabelsforChart,
+            datasets: [{
+              backgroundColor: [
+                'rgba(99, 128, 196, 0.9)'
+              ],
+              label: 'BMI',
+              cubicInterpolationMode: 'monotone',                
+              data: weekDataForBMI
+            }]
+          },
+          options: {
+            scales: {
+              x: {
+                display:true,
+                  ticks: {
+                    count:7,                    
+                    // Include a dollar sign in the ticks
+                    callback: function(value, index, ticks) {
+                      if (chartRange==0) {
+                        if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, 5);
+                        else return '';
+                      } 
+                    }
+                  }
+              },
+              y: {
+                ticks:{
+//                  count:10
+//                    callback: function(value, index, ticks) {
+//                        return 'x'+value;
+//                    }
+                }
+              }                
+            }
+          } 
+        });
+
+      }      
+            
+    </script>
+    
+    <script>
+      //以下必須 remark 掉，不然會有問題
+      //var app = new kendo.mobile.Application(document.body, { skin: "nova" });
+    </script>
+
+  </body>
+</html>

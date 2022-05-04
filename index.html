@@ -1,0 +1,298 @@
+<!--https://demos.telerik.com/kendo-ui/content/shared/js/mobile-examples.js-->
+<!--?displayName=小華&userId=U722be0c9c9d36e011c0e556bd2047819&pictureUrl=www.google.com-->
+<!--?displayName=小A&userId=U72Abe0c9c9d36e011c0e556bd2047819&pictureUrl=https://media.tractorsupply.com/is/image/TractorSupplyCompany/1305371?$456$  -->
+<!--?displayName=Paul%20Kang&userId=U8570ed5006325d504933612308d0fddf&pictureUrl=https://profile.line-scdn.net/0m00af3784725150d454061f6166cf75d95eb255c87861    -->
+    
+<!DOCTYPE html>
+<html>
+
+<head>
+  <script> var useLocalAPIs = false; </script>
+  
+  <title></title>
+
+  <!-- LINE Opengraph https://developers.line.biz/en/faq/tags/media/#how-are-the-url-previews-generated -->
+<!--  <meta property="og:image" content="https://raw.githubusercontent.com/forgeFitnessUgym/bodyMeasureLINE/master/ForgeLogo%E5%A4%A7.png" />  -->
+  <meta property="og:title" content="身高體重BMI量測" />
+  <meta property="og:description" content=""/>
+  <!-- End LINE Opengraph -->
+   
+  <meta name="msapplication-tap-highlight" content="no" />
+
+  <!--  using Noto Sans TC is added by Paul Kang-->
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+TC&display=swap" rel="stylesheet">
+
+  <link href="https://kendo.cdn.telerik.com/2020.1.114/styles/kendo.common-nova.min.css" rel="stylesheet" />
+  <link href="https://kendo.cdn.telerik.com/2020.1.114/styles/kendo.nova.min.css" rel="stylesheet" />
+  <link href="https://kendo.cdn.telerik.com/2020.1.114/styles/kendo.mobile.nova.min.css" rel="stylesheet" />   
+
+  <link href="css/courseStyle.css" rel="stylesheet" />
+     
+  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2020.1.114/js/kendo.all.min.js"></script>
+  <script src="https://kendo.cdn.telerik.com/2020.1.114/js/kendo.timezones.min.js"></script>
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">   
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.0/dist/JsBarcode.all.min.js"></script>
+  
+  <link rel="stylesheet" href="css/loading.css" />
+  <script src="js/loading.js"></script>    
+</head>
+
+<body id="body">
+  <style>
+  
+    .km-on-ios  .km-list > li {
+        background-color: rgb(250,250,250);
+        border-radius:10px;
+        margin: 10px;
+    }
+
+    .km-on-ios .km-header .km-navbar
+    {
+      background-color: red; /*darkslategray;*/
+      /* deeppink; */
+      font-size: 16px;
+    }
+
+    .km-on-ios .km-header .km-widget,
+    .km-on-ios .km-header .km-view-title {
+      color: white;
+    }
+
+    .km-on-android  .km-list > li {
+        background-color: rgb(250,250,250);
+        border-radius:10px;
+        margin: 10px;
+    }
+
+    .km-on-android .km-header .km-navbar
+    {
+      background-color: red; /*darkslategray;*/
+      /* deeppink; */
+      font-size: 16px;
+    }
+
+    .km-on-android .km-header .km-widget,
+    .km-on-android .km-header .km-view-title {
+      color: white;
+    }
+      
+    .NotoSansFont {
+      font-family: 'Noto Sans TC'; 
+    }
+    
+    .進行量測Label {
+      font-size: 18px;
+/*      font-weight: bold;*/
+      margin-left: 15px;
+      color: white;
+    }
+
+    .進行量測Input {
+      font-size: 18px;
+/*      font-weight: bold;*/
+      padding-left: 10px;
+/*      margin-right: 15px;      */
+      width: 100%;
+      color: darkslategray;
+    }    
+    
+    .量測記錄卡片 {
+      font-size: 18px;
+      margin-left: 15px;
+
+    }
+    
+    .店面陣列 > a {
+        display: inline-block;
+        *display: inline; /* For IE7 */
+        zoom: 1; /* Trigger hasLayout */
+        width: 25%;
+        text-align: center;
+    }    
+    
+    #calendar,
+    #calendar .k-calendar-view,
+    #calendar .k-content {
+        width: 100%;
+    }    
+  </style>
+  
+  <div id="errorMessage" style="display: none; margin-top: 2em; color: red; font-weight: bold" align="center">
+    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">身高體重BMI量測 V0.2</h3>
+  </div>
+    
+  <div data-role="view" data-title="身高體重BMI量測 V0.2" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
+    <header data-role="header">
+      <div data-role="navbar" id="normal" class="km-accent">
+
+        <a data-align="right" data-role="button" href="#forms" data-rel="" data-icon="contacts"></a>
+        
+        <span data-role="view-title"></span>
+             
+      </div>
+
+    </header>
+    
+    <footer style="display: none"></footer>
+   
+    <div style="height:220px; background-color:black; text-align:center">
+      <!-- <img src="金機.png" height="60px" style="margin-top:10px"><br>-->
+      <div style="height:30px"></div>
+      <span style="color:white">請到身高體重BMI機，掃描條碼進行量測</span><br>
+
+      <img id="barcode" style="margin-top:10px"/><br>
+      
+      <span id="量測記錄title" class="進行量測Label" style="float:left; padding-top: 10px">量測記錄</span>
+
+      <br><div style="height:30px"></div><hr>      
+    </div>
+    
+    <div data-role="content" style="background-color: black;">    
+      <ul id="紀錄List" data-role="listview" data-source="measurementSource" data-show="testaaa" data-pull-to-refresh="true" data-template="nav-template" data-header-template="header-template" class="main-menu" style="opacity:0.95">
+
+        <script type="text/x-kendo-template" id="header-template">
+          <span class="km-icon km-#: value #"></span> #: value #
+          </script>
+
+        <script type="text/x-kendo-template" id="nav-template">
+          <a href="#: url #" class="量測記錄卡片" >         
+            <p style="font-size:12px; color: black; margin-top:-8px"> #: 量測記錄時間 # </p>
+            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">身高: #: 身高 # </span>
+            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, 體重: #: 體重 #</span>
+            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, BMI: #: BMI #</span>
+          </a>
+        </script>
+      </ul>
+    </div>     
+  </div>  
+
+  <div id="forms" data-role="view" data-title="個人資料" data-init="initForm" data-use-native-scrolling="true" style="font-family: 'Noto Sans TC'">
+    <div id="formData">
+      <img id="LINE頭像" src="" class="km-thumbnail" style="width: 10em; height: 10em; margin: 1em auto; display: block; float: none;"/>
+      <div style="margin-left:23px">為了讓您更容易查詢，請註冊姓名及電話號碼</div>
+      <ul data-role="listview" data-style="inset">
+        <li>
+          <label class="km-label-above">姓名
+              <input id="formUserName" type="text" class="NotoSansFont"/>
+          </label>
+        </li>   
+        <li>
+          <label class="km-label-above">電話
+            <input id="formUserPhone" class="NotoSansFont" type="text" placeholder="格式: 09XX123456"/> 
+          </label> 
+        </li>
+        <li style="display:none">
+          <label class="km-label-above">HWBMI_ID
+            <input id="formHWBMI_ID" class="NotoSansFont" type="text" /> 
+          </label> 
+        </li>        
+      </ul>
+
+      <div align="center">
+        <a id="更新資料按鈕" data-role="button" class="km-primary" style="color: white; margin:1em; padding-left:3em; padding-right:3em" onclick="更新資料()" >註冊/修改資料</a> 
+      </div>
+    </div>
+
+    <div id="個人資料使用Div" align="center" style="display:block">
+      <br>
+      點擊 <b>送出資料</b> 表示您同意個人資料使用條款
+      <br>
+      <a onclick="顯示個人資料同意書()">個人資料使用同意條款</a>
+      <div style="height: 100px"></div> 
+    </div>   
+
+    <div id="個人資料同意書Div" align="center" class="NotoSansFont" style="display: none">
+      <h1 style="text-align:center; height:60px; color:white; background-color:#ff4350; margin:0; padding-top: 15px">個人資料同意條款</h1>
+      <div style="margin: 20px; text-align: justify">
+        <div>您確認知悉宇康醫電股份有限公司(以下簡稱本公司)書面告知您以下事項： </div>
+        <div style="margin-top: 10px">一、自您勾選同意本同意書即日起，本公司於合於營業登記項目或組織章程所定之業務之特定目的下，於經營業務之區域範圍內，由本公司及本公司關係企業合理使用、交換、處理及利用您所提供之個人資料包括姓名、身分證統一編號、暱稱、性別、出生年、身高、體重、運動習慣包括每月運動時間、每次運動時間及激烈程度等個人資料。</div>
+
+        <div style="margin-top: 10px">二、您同意本公司蒐集您在健身器材上的運動資料(例如：力量訓練、跑步機、飛輪車、橢圓機等器材對應的數據)，並於本公司及本公司關係企業合理使用、交換、處理及利用該運動資料。</div>  
+
+        <div style="margin-top: 10px">三、您同意個人資料利用之期間為特定目的存續期間。</div>    
+
+        <div style="margin-top: 10px">四、您同意個人資料利用之對象、地區及方式如下：</div>    
+
+        <div style="margin-left: 20px">(一) 對象：本公司(含受本公司委託處理事務之委外機構)、新北市政府、其他業務相關之公司或機構、本公司共同行銷或交互運用您資料之公司或機構、與本公司合作推廣業務之公司或機構。</div>    
+        <div style="margin-left: 20px">(二) 地區：前揭個人資料利用對象其國內及國外所在地。</div>                         
+        <div style="margin-left: 20px">(三)	方式：符合個人資料保護相關法令以自動化機器或其他非自動化之利用方式。</div>                                                                                                                 <div style="margin-top: 10px">五、如您不同意本公司為行銷及廣告推廣商品或服務，請隨時通知本公司。</div>          
+
+        <div style="margin-top: 10px">六、如日後因個人資料變動或其他原因而有查詢、閱覽或補充個人資訊、提供個人資料複本或欲請求停止處理利用或刪除您的資料之需求時，請來信或來電本公司(本公司目前地址為苗栗縣竹南鎮科北五路2號3樓，電話為037-777000分機8227；最新聯絡方式可至本公司企業網站[網址http://www.ucaremedi.com/]查詢)，本公司將有專人即時為您處理。</div>               
+
+        <div style="margin-top: 10px">七、您理解您所提供之資料必須正確及完整，如資料有所遺漏，將可能影響您的權益。</div>                                                                               
+        <div style="margin-top: 30px">* 茲同意宇康醫電股份有限公司於上述目的及範圍內使用、交換、處理及利用本人之個人資料。。</div> 
+
+        <div style="margin-top: 10px">* 茲同意宇康醫電股份有限公司使用、交換、處理及利用本人在健身器材上的運動資料。</div>  
+      </div>
+
+      <div align="center">
+        <a class="km-primary" style="color: white; margin:1em; padding-top:0.3em; padding-bottom: 0.3em; padding-left:3em; padding-right:3em" onclick="我知道了()" >我知道了</a>
+        <div style="height: 100px"></div>
+      </div> 
+
+    </div> 
+
+    
+  </div>  
+  
+  <div data-id="mainDiv" data-role="layout" data-show="showDemoLayout" data-hide="removeView">
+    <header data-role="header">
+      <div data-role="navbar" class="km-accent">
+        <a data-align="left" data-icon="arrow-w" href="#/" data-role="backbutton" data-transition="slide reverse"></a>
+        <span data-role="view-title"></span>
+      </div>
+    </header>
+  </div>
+
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.13.1/firebase-app.js"></script>
+ 
+  <script src="3-controllers/functions.js"></script>
+  <script src="1-models/data-process.js"></script>
+  <script src="js/prettify.js"></script> 
+  
+  <script>
+    // 中光電竹南廠
+    var 場所位置1緯度=  24.7118; 
+    var 場所位置1經度= 120.9162;
+
+    //新竹市東區中央路160號
+    var 場所位置2緯度=  24.807699;
+    var 場所位置2經度= 120.972103;
+    
+    //北大運動場
+    var 場所位置緯度=   24.940216;
+    var 場所位置經度=  121.365881;
+    
+    var 目前位置緯度;
+    var 目前位置經度;
+          
+    var paramToSend = "";
+    var inputParamString = location.search;
+    var inputParam = inputParamString.split("&");
+    var displayName, userId, pictureUrl;
+    var inputError = false;
+    var refresh = false;
+    
+    var 預設常用健身房 = "開發 T99999999";
+    var 店面名稱;
+    var 機器序號;
+    var 已經是會員;
+            
+    // checkInputParam() 和 checkUserIdExist() 都是在 functions.js 定義
+    console.log("check User");
+    if (checkInputParam()) checkUserIdExist();
+    
+        
+    // Move 讀取店面名稱和機器序號 into checkUserIdExist()
+  
+    //app.navigate('#forms');
+
+  </script>
+</body>
+
+</html>
