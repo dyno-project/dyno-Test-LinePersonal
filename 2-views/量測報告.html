@@ -39,13 +39,11 @@
             <a id="right-arrow" style="font-size: 48px; color:#FF4350; float:right;margin-right:10px; padding:10px;border-radius:8px" onclick="chartMoveNext()"><i class="fa fa-caret-right" aria-hidden="true"></i></a> 
           </div>
                  
-        <canvas id="myChartHeight" width="400px" height="200px" style="margin:10px"></canvas>   
+        <canvas id="myChartRightHand" width="400px" height="200px" style="margin:10px"></canvas>   
           
-        <canvas id="myChartWeight" width="400px" height="200px" style="margin:10px"></canvas>   
-        
-        <canvas id="myChartDyno" width="400px" height="200px" style="margin:10px"></canvas>   
-                
-<!--
+        <canvas id="myChartLeftHand" width="400px" height="200px" style="margin:10px"></canvas>   
+
+<!--        
         <a class="" style="font-size: 26px; color:#FF4350; float:left;margin-left:100px; font-weight:bold; background-color:lightgray
         ; padding:10px;border-radius:8px " onclick=""><</a>    
         
@@ -95,9 +93,8 @@
       var allLabelsforChart=[];
 
       var ctx;
-      var myChartHeight;      
-      var myChartWeight;      
-      var myChartDyno;      
+      var myChartRightHand;      
+      var myChartLeftHand;          
       
       var chartRange=0; //0:week, 1:month, 2:all
       var 所有量測數據;
@@ -165,11 +162,11 @@
       }
      
       // Update charts examples
-      // myChartHeight.options.scales.x.display=true;
-      // myChartHeight.update()
+      // myChartRightHand.options.scales.x.display=true;
+      // myChartRightHand.update()
       
-      // myChartHeight.options.scales.y.min=40
-      // myChartHeight.update() 
+      // myChartRightHand.options.scales.y.min=40
+      // myChartRightHand.update() 
       
       function displayChartsInWeek(){
         console.log("Display Charts in week range");
@@ -184,21 +181,17 @@
         getDataOfAweek(chartCenterDate);
         $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
         
-        myChartHeight.data.labels=weekLabelsforChart;
-        myChartWeight.data.labels=weekLabelsforChart;
-        myChartDyno.data.labels=weekLabelsforChart;
+        myChartRightHand.data.labels=weekLabelsforChart;
+        myChartLeftHand.data.labels=weekLabelsforChart;
         
-        myChartHeight.data.datasets[0].data=weekDataForHeight; 
-        myChartWeight.data.datasets[0].data=weekDataForHeight; 
-        myChartDyno.data.datasets[0].data=weekDataForHeight; 
+        myChartRightHand.data.datasets[0].data=weekDataForHeight; 
+        myChartLeftHand.data.datasets[0].data=weekDataForHeight; 
         
-        myChartHeight.options.scales.x.display=true;
-        myChartWeight.options.scales.x.display=true;
-        myChartDyno.options.scales.x.display=true;
+        myChartRightHand.options.scales.x.display=true;
+        myChartLeftHand.options.scales.x.display=true;
         
-        myChartHeight.update();                 
-        myChartWeight.update();                 
-        myChartDyno.update();                 
+        myChartRightHand.update();                 
+        myChartLeftHand.update();                                 
         
       }
 
@@ -214,21 +207,17 @@
         
         getDataOfAmonth(chartCenterDate);
         $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
-        myChartHeight.data.labels=monthLabelsforChart;
-        myChartWeight.data.labels=monthLabelsforChart;
-        myChartDyno.data.labels=monthLabelsforChart;
+        myChartRightHand.data.labels=monthLabelsforChart;
+        myChartLeftHand.data.labels=monthLabelsforChart;
         
-        myChartHeight.data.datasets[0].data=monthDataForHeight;
-        myChartWeight.data.datasets[0].data=monthDataForWeight;
-        myChartDyno.data.datasets[0].data=monthDataForDyno;
+        myChartRightHand.data.datasets[0].data=monthDataForHeight;
+        myChartLeftHand.data.datasets[0].data=monthDataForWeight;
         
-        myChartHeight.options.scales.x.display=false;        
-        myChartWeight.options.scales.x.display=false;        
-        myChartDyno.options.scales.x.display=false;        
+        myChartRightHand.options.scales.x.display=false;        
+        myChartLeftHand.options.scales.x.display=false;           
       
-        myChartHeight.update();          
-        myChartWeight.update();          
-        myChartDyno.update();                 
+        myChartRightHand.update();          
+        myChartLeftHand.update();                          
       }
       
       function displayChartsInAll(){
@@ -245,63 +234,37 @@
         
         $("#chart_range").text(allLabelsforChart[0].substr(0,10)+" ~ "+allLabelsforChart[allLabelsforChart.length-1].substr(0,10));        
         
-        myChartHeight.data.labels=allLabelsforChart;
-        myChartWeight.data.labels=allLabelsforChart;
-        myChartDyno.data.labels=allLabelsforChart;
+        myChartRightHand.data.labels=allLabelsforChart;
+        myChartLeftHand.data.labels=allLabelsforChart;
         
-        myChartHeight.data.datasets[0].data=allDataForHeight;
-        myChartWeight.data.datasets[0].data=allDataForWeight;
-        myChartDyno.data.datasets[0].data=allDataForDyno;
+        myChartRightHand.data.datasets[0].data=allDataForHeight;
+        myChartLeftHand.data.datasets[0].data=allDataForWeight;
                 
-        myChartHeight.options.scales.x.display=false; 
-        myChartWeight.options.scales.x.display=false; 
-        myChartDyno.options.scales.x.display=false; 
+        myChartRightHand.options.scales.x.display=false; 
+        myChartLeftHand.options.scales.x.display=false;  
         
-        myChartHeight.update();        
-        myChartWeight.update();        
-        myChartDyno.update();        
+        myChartRightHand.update();        
+        myChartLeftHand.update();              
       }      
       
       function chartMovePrev(){
         if (chartRange==0) { // move prev one day
           console.log("Move to Prev day");
-          
-          //simulated data
-          //weekDataForHeight.unshift(Math.floor(Math.random()*50)/10+170);
-          //weekDataForHeight.pop();
-          //myChartHeight.update();                
-          
-          //一次更新整週資料，會失去 chart 移動效果          
-          //chartCenterDate -=86400000;
-          //getDataOfAweek(chartCenterDate);
-          //myChartHeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          //myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
-          //myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
-          //myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
-          //myChartDyno.data.label=weekLabelsforChart;              //必要，不然 update()無效
-          //myChartDyno.data.datasets[0].data=weekDataForDyno;       //必要，不然 update()無效          
-          //
-          //$("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
-          //myChartHeight.update();
-          //myChartWeight.update();
-          //myChartDyno.update();
-          
+                    
           // 取前一天資料
           getWeekDataPrevDay(); 
           
           $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));       
-          myChartHeight.update();          
-          myChartWeight.update();          
-          myChartDyno.update();           
+          myChartRightHand.update();          
+          myChartLeftHand.update();                   
           
         } else if (chartRange==1) { // move prev one week
           console.log("Move to Prev week");  
           for (var i=0; i<7; i++) getMonthDataPrevDay(); 
           
           $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
-          myChartHeight.update();          
-          myChartWeight.update();          
-          myChartDyno.update();                   
+          myChartRightHand.update();          
+          myChartLeftHand.update();                           
         }
         
       }
@@ -312,23 +275,21 @@
           //simulated data
           //weekDataForHeight.push(Math.floor(Math.random()*50)/10+170);
           //weekDataForHeight.shift();
-          //myChartHeight.update();      
+          //myChartRightHand.update();      
           
           getWeekDataNextDay(); 
           
           $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
-          myChartHeight.update();          
-          myChartWeight.update();          
-          myChartDyno.update();           
+          myChartRightHand.update();          
+          myChartLeftHand.update();                     
           
         } else if (chartRange==1) { // move next one week
           console.log("Move to Next week");          
           for (var i=0; i<7;i++) getMonthDataNextDay();
           
           $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
-          myChartHeight.update();          
-          myChartWeight.update();          
-          myChartDyno.update();           
+          myChartRightHand.update();          
+          myChartLeftHand.update();                   
         }
                 
       }      
@@ -344,11 +305,14 @@
         var newDataForWeight;
         var newDataForDyno;
         for (var rec in 所有量測數據) {
+          var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
+          var recDate = recTime.toISOString().substr(0,10);          
 
-          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
-            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
+          //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+          if (recDate==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
           }            
@@ -384,11 +348,14 @@
         var newDataForWeight;
         var newDataForDyno;
         for (var rec in 所有量測數據) {
+          var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
+          var recDate = recTime.toISOString().substr(0,10);          
 
-          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
-            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
+          //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+          if (recDate==matchFullDate){  
+            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
           }            
@@ -425,14 +392,15 @@
         var newDataForHeight;
         var newDataForWeight;
         var newDataForDyno;
-        var newMeasureTime;
         for (var rec in 所有量測數據) {
+          var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
+          var recDate = recTime.toISOString().substr(0,10);           
 
-          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
-            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
-            newMeasureTime  = 所有量測數據[rec].measure_time;
+          //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+          if (recDate==matchFullDate){
+            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
           }            
@@ -442,14 +410,13 @@
           newDataForHeight=null;
           newDataForWeight=null;
           newDataForDyno   =null; 
-          newMeasureTime  = matchFullDate;
           //console.log("not matched");
         }          
 
         monthDataForHeight.unshift(newDataForHeight);          
         monthDataForWeight.unshift(newDataForWeight);          
         monthDataForDyno.unshift(newDataForDyno); 
-        monthLabelsforChart.unshift(newMeasureTime);
+        monthLabelsforChart.unshift(matchFullDate);
         monthDataForHeight.pop();          
         monthDataForWeight.pop();          
         monthDataForDyno.pop(); 
@@ -468,15 +435,16 @@
         var matched=false;  
         var newDataForHeight;
         var newDataForWeight;
-        var newDataForDyno;
-        var newMeasureTime;        
+        var newDataForDyno;      
         for (var rec in 所有量測數據) {
-
-          if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
-            newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
-            newMeasureTime  = 所有量測數據[rec].measure_time;            
+          var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
+          var recDate = recTime.toISOString().substr(0,10); 
+          
+          //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+          if (recDate==matchFullDate){          
+            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);        
             matched=true;
             //console.log("matched");
           }            
@@ -486,15 +454,13 @@
           newDataForHeight=null;
           newDataForWeight=null;
           newDataForDyno   =null; 
-          newMeasureTime  = matchFullDate;
           //console.log("not matched");
         }          
-
 
         monthDataForHeight.push(newDataForHeight);          
         monthDataForWeight.push(newDataForWeight);          
         monthDataForDyno.push(newDataForDyno); 
-        monthLabelsforChart.push(newMeasureTime);
+        monthLabelsforChart.push(matchFullDate);
         monthDataForHeight.shift();          
         monthDataForWeight.shift();          
         monthDataForDyno.shift(); 
@@ -516,7 +482,7 @@
                 
           var matched=false;          
           for (var rec in 所有量測數據) {
-            var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000);          
+            var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
             var recDate = recTime.toISOString().substr(0,10);
             
             //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
@@ -558,14 +524,16 @@
                 
           var matched=false;          
           for (var rec in 所有量測數據) {
+            var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000);          
+            var recDate = recTime.toISOString().substr(0,10);            
 
-            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            if (recDate==matchFullDate){  
+              monthLabelsforChart.push(matchFullDate);
               
-              monthLabelsforChart.push(所有量測數據[rec].measure_time);
-              
-              monthDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
-              monthDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-              monthDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
+              monthDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
+              monthDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+              //monthDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }
@@ -591,12 +559,14 @@
         allDataForDyno=[];
         
         for (var rec in 所有量測數據) {
+            var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000);          
+            var recDate = recTime.toISOString().substr(0,10);            
 
-            allLabelsforChart.push(所有量測數據[rec].measure_time);
+            allLabelsforChart.push(recDate);
           
-            allDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
-            allDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-            allDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
+            allDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
+            allDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+            //allDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
                      
         }
 
@@ -610,8 +580,8 @@
         
         $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
                 
-        ctxH = $('#myChartHeight');
-        myChartHeight = new Chart(ctxH, {           
+        ctxRH = $('#myChartRightHand');
+        myChartRightHand = new Chart(ctxRH, {           
           type: 'line',
           data: {
             //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -620,7 +590,7 @@
               backgroundColor: [
                 'rgba(99, 128, 64, 0.9)'
               ],
-              label: '身高(公分)',
+              label: '右手握力(kg)',
               cubicInterpolationMode: 'monotone',                
               data: weekDataForHeight
             }]
@@ -651,8 +621,8 @@
           }            
         });    
 
-        ctxW = $('#myChartWeight');
-        myChartWeight = new Chart(ctxW, {
+        ctxLH = $('#myChartLeftHand');
+        myChartLeftHand = new Chart(ctxLH, {
           type: 'line',
           data: {
             //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -661,7 +631,7 @@
               backgroundColor: [
                 'rgba(255, 99, 132, 0.9)'
               ],
-              label: '體重(公斤)',
+              label: '左手握力(kg)',
               cubicInterpolationMode: 'monotone',
               data: weekDataForWeight
             }]
@@ -685,48 +655,6 @@
 //                  count:10
 //                    callback: function(value, index, ticks) {
 //                        return ' '+value;
-//                    }
-                }
-              }                
-            }
-          } 
-        });
-
-        ctxB = $('#myChartDyno');
-        myChartDyno = new Chart(ctxB, {
-          type: 'line',
-          data: {
-            //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
-            labels: weekLabelsforChart,
-            datasets: [{
-              backgroundColor: [
-                'rgba(99, 128, 196, 0.9)'
-              ],
-              label: 'Dyno',
-              cubicInterpolationMode: 'monotone',                
-              data: weekDataForDyno
-            }]
-          },
-          options: {
-            scales: {
-              x: {
-                display:true,
-                  ticks: {
-                    count:7,                    
-                    // Include a dollar sign in the ticks
-                    callback: function(value, index, ticks) {
-                      if (chartRange==0) {
-                        if (index==0 || index==3 ||index==6) return weekLabelsforChart[index].substr(5, 5);
-                        else return '';
-                      } 
-                    }
-                  }
-              },
-              y: {
-                ticks:{
-//                  count:10
-//                    callback: function(value, index, ticks) {
-//                        return 'x'+value;
 //                    }
                 }
               }                
