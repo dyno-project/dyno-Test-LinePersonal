@@ -155,6 +155,7 @@
         
         var keys=inputParam[1].split('_');
         chartCenterDate=parseInt(keys[1]);
+        console.log("aaaa", chartCenterDate);
         getDataOfAweek(chartCenterDate);
         
         
@@ -510,18 +511,22 @@
         weekDataForDyno=[];
         for (var i=-3; i<4; i++) { // 從選擇日前四天到後兩天
           selTime = new Date(reqDate - UTC_delta*3600000 + i*86400000);          
-          matchFullDate= matchFullDate = selTime.toISOString().substr(0,10);
+          matchFullDate = selTime.toISOString().substr(0,10);
           //console.log(matchFullDate);
                 
           var matched=false;          
           for (var rec in 所有量測數據) {
-
-            if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
-              weekLabelsforChart.push(所有量測數據[rec].measure_time);
+            var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000);          
+            var recDate = recTime.toISOString().substr(0,10);
+            
+            //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
+            if (recDate==matchFullDate){
+              //weekLabelsforChart.push(所有量測數據[rec].measure_time);
+              weekLabelsforChart.push(matchFullDate);
               
-              weekDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
-              weekDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-              weekDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
+              weekDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
+              weekDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+              //weekDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }

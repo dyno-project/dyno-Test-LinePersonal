@@ -122,10 +122,10 @@
   </style>
   
   <div id="errorMessage" style="display: none; margin-top: 2em; color: red; font-weight: bold" align="center">
-    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">握力量測 V0.9</h3>
+    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">握力量測 V0.9a</h3>
   </div>
     
-  <div data-role="view" data-title="握力量測 V0.9" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
+  <div data-role="view" data-title="握力量測 V0.9a" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
     <header data-role="header">
       <div data-role="navbar" id="normal" class="km-accent">
 
@@ -295,6 +295,8 @@
     var 店面名稱;
     var 機器序號;
     var 已經是會員;
+    
+    var userPicArr=inputParam[2].split('=');
             
     // checkInputParam() 和 checkUserIdExist() 都是在 functions.js 定義
     console.log("check User");

@@ -239,7 +239,7 @@ function 我知道了(){
 async function 送出量測要求() {
   console.log("送出量測要求");
   
-  var userPicArr=inputParam[2].split('=');
+  //var userPicArr=inputParam[2].split('=');
   
   console.log("進行量測:", $("#formDynoSN").val(), $("#formDYNO_ID").val(), userPicArr[1]) ;
   
@@ -249,7 +249,8 @@ async function 送出量測要求() {
 //    return false;
 //  }
 
-  var profile = "請確認要使用的 握力器: " + $("#formDynoSN").val();       
+  var profile = "請確認要使用的 握力器: " + $("#formDynoSN").val() + "\n\n" +
+                "若不是，請先取消，然後到 個人資料 頁面設定 常用握力器 ";       
   
   if (confirm(profile)) {
     paramToSend = "?API=10" +
