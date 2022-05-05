@@ -13,7 +13,7 @@
 
   <!-- LINE Opengraph https://developers.line.biz/en/faq/tags/media/#how-are-the-url-previews-generated -->
 <!--  <meta property="og:image" content="https://raw.githubusercontent.com/forgeFitnessUgym/bodyMeasureLINE/master/ForgeLogo%E5%A4%A7.png" />  -->
-  <meta property="og:title" content="身高體重BMI量測" />
+  <meta property="og:title" content="握力量測" />
   <meta property="og:description" content=""/>
   <!-- End LINE Opengraph -->
    
@@ -38,6 +38,7 @@
   
   <link rel="stylesheet" href="css/loading.css" />
   <script src="js/loading.js"></script>    
+  
 </head>
 
 <body id="body">
@@ -121,10 +122,10 @@
   </style>
   
   <div id="errorMessage" style="display: none; margin-top: 2em; color: red; font-weight: bold" align="center">
-    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">身高體重BMI量測 V0.2</h3>
+    <h3 class="NotoSansFont" style="margin-top: 2em; color: darkslategray; font-weight: bold">握力量測 V0.9</h3>
   </div>
     
-  <div data-role="view" data-title="身高體重BMI量測 V0.2" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
+  <div data-role="view" data-title="握力量測 V0.9" style="font-family: 'Noto Sans TC'" id="mainDiv" data-layout="" data-reload="false">
     <header data-role="header">
       <div data-role="navbar" id="normal" class="km-accent">
 
@@ -139,18 +140,23 @@
     <footer style="display: none"></footer>
    
     <div style="height:220px; background-color:black; text-align:center">
-      <!-- <img src="金機.png" height="60px" style="margin-top:10px"><br>-->
+      <img src="金機.png" height="60px" style="margin-top:10px"><br>
+      
+      
       <div style="height:30px"></div>
-      <span style="color:white">請到身高體重BMI機，掃描條碼進行量測</span><br>
-
+      
+      <a class="" style="font-size: 18px; color: white; float:right;margin-right:15px; background-color:#FF4350; padding:10px;border-radius:8px " onclick="送出量測要求()">進行量測</a> 
+      <!-- 
+      <span style="color:white">請到握力機，掃描條碼進行量測</span><br>
       <img id="barcode" style="margin-top:10px"/><br>
+      -->
       
       <span id="量測記錄title" class="進行量測Label" style="float:left; padding-top: 10px">量測記錄</span>
 
       <br><div style="height:30px"></div><hr>      
     </div>
     
-    <div data-role="content" style="background-color: black;">    
+    <div data-role="content" style="background-color: black; margin-top:-50px">    
       <ul id="紀錄List" data-role="listview" data-source="measurementSource" data-show="testaaa" data-pull-to-refresh="true" data-template="nav-template" data-header-template="header-template" class="main-menu" style="opacity:0.95">
 
         <script type="text/x-kendo-template" id="header-template">
@@ -159,10 +165,12 @@
 
         <script type="text/x-kendo-template" id="nav-template">
           <a href="#: url #" class="量測記錄卡片" >         
-            <p style="font-size:12px; color: black; margin-top:-8px"> #: 量測記錄時間 # </p>
-            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">身高: #: 身高 # </span>
-            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, 體重: #: 體重 #</span>
-            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">, BMI: #: BMI #</span>
+            <span style="font-size:12px; color: black; margin-top:-8px"> #: 量測記錄時間 # </span>
+            <span style="font-size:12px; color: black; margin-top:-10px"> / 握力器: #: 握力器 #</span>
+            <br>
+            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold">左手握力: #: 左手握力 # </span>
+            <span style="font-size:15px; color: black; margin-top:-10px; font-weight:bold"> / 右手握力: #: 右手握力 #</span>
+            
           </a>
         </script>
       </ul>
@@ -184,9 +192,14 @@
             <input id="formUserPhone" class="NotoSansFont" type="text" placeholder="格式: 09XX123456"/> 
           </label> 
         </li>
+        <li>
+          <label class="km-label-above">常用握力器
+            <input id="formDynoSN" class="NotoSansFont" type="text" /> 
+          </label> 
+        </li>        
         <li style="display:none">
-          <label class="km-label-above">HWBMI_ID
-            <input id="formHWBMI_ID" class="NotoSansFont" type="text" /> 
+          <label class="km-label-above">DYNO_ID
+            <input id="formDYNO_ID" class="NotoSansFont" type="text" /> 
           </label> 
         </li>        
       </ul>

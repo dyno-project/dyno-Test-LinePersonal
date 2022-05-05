@@ -101,7 +101,7 @@ async function checkUserIdExist() {
     $("#formUserName").val(decodeURI(displayName[1]));
     $("#formUserName").attr("disabled", "disabled"); 
     $("#LINE頭像").attr("src", pictureUrl[1]);
-    $("#formHWBMI_ID").val(res.newId);    
+    $("#formDYNO_ID").val(res.newId);    
     已經是會員 = false; 
     app.navigate('#forms'); 
     return;
@@ -110,7 +110,8 @@ async function checkUserIdExist() {
     $("#formUserName").attr("disabled", "disabled"); 
     $("#LINE頭像").attr("src", pictureUrl[1]); 
     $("#formUserPhone").val(res.電話);
-    $("#formHWBMI_ID").val(res.Id);
+    $("#formDYNO_ID").val(res.Id);
+    $("#formDynoSN").val(res.DynoSN);
     console.log(res)
     已經是會員 = true;     
   }
@@ -121,12 +122,12 @@ async function checkUserIdExist() {
   //$.loading.end(); 
   
   // show barcode
-  var hwBMI_ID=$("#formHWBMI_ID").val();
-  JsBarcode("#barcode", hwBMI_ID, {
-    displayValue: false,
-    width:2,
-    height:70
-  });   
+//  var dyno_ID=$("#formDYNO_ID").val();
+//  JsBarcode("#barcode", dyno_ID, {
+//    displayValue: false,
+//    width:2,
+//    height:70
+//  });   
   
   return;
   
@@ -136,7 +137,8 @@ async function 註冊會員() {
   console.log("註冊會員");
   // 檢查資料格式     
   if (   $("#formUserName").val()        == ""
-      || $("#formUserPhone").val()       == ""      
+      || $("#formUserPhone").val()       == ""           
+      || $("#formDynoSN").val()          == ""      
      ) {
     alert("請填寫必填項目!");
     
@@ -144,16 +146,19 @@ async function 註冊會員() {
   }
 
   var profile = "請確認註冊資料:\n" +
-    "    姓名: " + $("#formUserName").val() + "\n" +                 
-    "    電話: " + $("#formUserPhone").val() + "\n";       
+    "    姓名: "      + $("#formUserName").val()  + "\n"+                 
+    "    電話: "      + $("#formUserPhone").val() + "\n"+      
+    "    常用握力器: " + $("#formDynoSN").val()    + "\n";       
 
   if (confirm(profile)) {
-
+    var userPicArr = pic=inputParam[2].split('=');
     // 先綁定 ID, 名字和電話
     paramToSend = "?API=01" +
-      "&UserId="            + $("#formHWBMI_ID").val()+  
+      "&UserId="            + $("#formDYNO_ID").val()+  
+      "&PicURL="            + userPicArr[1]+  
       "&Name="              + $("#formUserName").val()+  
-      "&Phone="             + $("#formUserPhone").val();  
+      "&Phone="             + $("#formUserPhone").val()+  
+      "&DynoSN="            + $("#formDynoSN").val();  
   
     console.log(paramToSend); 
     
@@ -172,13 +177,13 @@ async function 註冊會員() {
     // 再綁定 LineID 和 UserID
     paramToSend = "?API=03" +
       "&LineId="           + userId[1] +
-      "&UserId="           + $("#formHWBMI_ID").val();  
+      "&UserId="           + $("#formDYNO_ID").val();  
 
     console.log(paramToSend); 
     
     var res = await callAPI(paramToSend, '寫入資料');
     
-    if (res == "API:03 會員資料Line綁定hwBMI寫入成功") {
+    if (res == "API:03 會員資料Line綁定dyno寫入成功") {
       alert("資料更新成功，回到量測頁面");
       checkUserIdExist();
       已經是會員 = true;
@@ -229,4 +234,46 @@ function 我知道了(){
   $("#formData").show();
   $("#個人資料使用Div").show();  
   $("#個人資料同意書Div").hide();      
+}
+
+async function 送出量測要求() {
+  console.log("送出量測要求");
+  
+  var userPicArr=inputParam[2].split('=');
+  
+  console.log("進行量測:", $("#formDynoSN").val(), $("#formDYNO_ID").val(), userPicArr[1]) ;
+  
+  // 檢查資料格式     
+//  if (   $("#formDynoSN").val() == "" || $("#formDYNO_ID").val()       == "") {
+//    alert("請填寫必填項目!");    
+//    return false;
+//  }
+
+  var profile = "請確認要使用的 握力器: " + $("#formDynoSN").val();       
+  
+  if (confirm(profile)) {
+    paramToSend = "?API=10" +
+      "&UserId="            + $("#formDYNO_ID").val()+  
+      "&DynoSN="            + $("#formDynoSN").val();  
+  
+    console.log(paramToSend); 
+    
+    var res = await callAPI(paramToSend, '發送量測要求');
+
+    if (res == "OK") {
+      //alert("資料更新成功，回到量測頁面");
+      //checkUserIdExist();
+      //已經是會員 = true;
+    } else {
+      alert("發送量測要求，請重試。若一直有問題，請洽管理員")
+      $("#errorMessage").css("display", "block");
+      return;
+    }
+       
+
+  } else {
+    console.log("Cancel");
+  };  
+  
+  
 }

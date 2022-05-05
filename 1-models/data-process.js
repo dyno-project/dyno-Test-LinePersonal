@@ -1,7 +1,6 @@
 var isAndroid = kendo.support.mobileOS.android;
 
-//var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://hwbmi-api.herokuapp.com/';
-var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://chdr-weight.herokuapp.com/';
+var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://dyno-api.herokuapp.com/';
 console.log(apiSite);
 
 var measurementSource = new kendo.data.DataSource({
@@ -38,7 +37,7 @@ async function 取得量測記錄(data) {
     var dataTemp=[];
     data.success(dataTemp);
   } else {
-    paramToSend = "?API=33" + "&UserId=" + $("#formHWBMI_ID").val(); 
+    paramToSend = "?API=33" + "&UserId=" + $("#formDYNO_ID").val(); 
     console.log(paramToSend);
     resStr = await callAPI(paramToSend, '讀取量測記錄');
 
@@ -46,14 +45,14 @@ async function 取得量測記錄(data) {
 
     var dataTemp=[];
     for (rec in 所有量測數據) {
-      var 時間Date = 所有量測數據[rec].measure_time;
+      var 時間Date = new Date(所有量測數據[rec].measure_time);
       console.log("時間Date", 時間Date);      
       var 卡片 = {
-        "量測記錄時間": 時間Date, //所有量測數據[i].量測時間,              
-        "身高":    所有量測數據[rec].height,
-        "體重":    所有量測數據[rec].net_weight,
-        "BMI":    所有量測數據[rec].bmi,             
-        "url": "2-views/量測報告.html?"+$("#formHWBMI_ID").val()+"&"+rec,
+        "量測記錄時間": 時間Date.toLocaleDateString()+" "+時間Date.toLocaleTimeString(), //所有量測數據[i].量測時間,  
+        "右手握力":    所有量測數據[rec].dynoRightHand+" kg",
+        "左手握力":    所有量測數據[rec].dynoLeftHand+" kg",
+        "握力器":      所有量測數據[rec].sn,             
+        "url": "2-views/量測報告.html?"+$("#formDYNO_ID").val()+"&"+rec,
         "section": "A"             
       };
       dataTemp.push(卡片); 

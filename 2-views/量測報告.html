@@ -43,7 +43,7 @@
           
         <canvas id="myChartWeight" width="400px" height="200px" style="margin:10px"></canvas>   
         
-        <canvas id="myChartBMI" width="400px" height="200px" style="margin:10px"></canvas>   
+        <canvas id="myChartDyno" width="400px" height="200px" style="margin:10px"></canvas>   
                 
 <!--
         <a class="" style="font-size: 26px; color:#FF4350; float:left;margin-left:100px; font-weight:bold; background-color:lightgray
@@ -80,15 +80,15 @@
       
       var weekDataForHeight=[];      
       var weekDataForWeight=[];      
-      var weekDataForBMI=[];  
+      var weekDataForDyno=[];  
       
       var monthDataForHeight=[];      
       var monthDataForWeight=[];      
-      var monthDataForBMI=[]; 
+      var monthDataForDyno=[]; 
       
       var allDataForHeight=[];      
       var allDataForWeight=[];      
-      var allDataForBMI=[]; 
+      var allDataForDyno=[]; 
       
       var weekLabelsforChart=[];      
       var monthLabelsforChart=[];
@@ -97,7 +97,7 @@
       var ctx;
       var myChartHeight;      
       var myChartWeight;      
-      var myChartBMI;      
+      var myChartDyno;      
       
       var chartRange=0; //0:week, 1:month, 2:all
       var 所有量測數據;
@@ -145,7 +145,7 @@
       }
             
       async function 讀取量測數據ForChart() {
-        var paramToSend = "?API=33" + "&UserId=" + $("#formHWBMI_ID").val(); 
+        var paramToSend = "?API=33" + "&UserId=" + $("#formDYNO_ID").val(); 
         console.log(paramToSend);
         var resStr = await callAPI(paramToSend, '讀取量測記錄'); //callAPI defined in functions.js
 
@@ -185,19 +185,19 @@
         
         myChartHeight.data.labels=weekLabelsforChart;
         myChartWeight.data.labels=weekLabelsforChart;
-        myChartBMI.data.labels=weekLabelsforChart;
+        myChartDyno.data.labels=weekLabelsforChart;
         
         myChartHeight.data.datasets[0].data=weekDataForHeight; 
         myChartWeight.data.datasets[0].data=weekDataForHeight; 
-        myChartBMI.data.datasets[0].data=weekDataForHeight; 
+        myChartDyno.data.datasets[0].data=weekDataForHeight; 
         
         myChartHeight.options.scales.x.display=true;
         myChartWeight.options.scales.x.display=true;
-        myChartBMI.options.scales.x.display=true;
+        myChartDyno.options.scales.x.display=true;
         
         myChartHeight.update();                 
         myChartWeight.update();                 
-        myChartBMI.update();                 
+        myChartDyno.update();                 
         
       }
 
@@ -215,19 +215,19 @@
         $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
         myChartHeight.data.labels=monthLabelsforChart;
         myChartWeight.data.labels=monthLabelsforChart;
-        myChartBMI.data.labels=monthLabelsforChart;
+        myChartDyno.data.labels=monthLabelsforChart;
         
         myChartHeight.data.datasets[0].data=monthDataForHeight;
         myChartWeight.data.datasets[0].data=monthDataForWeight;
-        myChartBMI.data.datasets[0].data=monthDataForBMI;
+        myChartDyno.data.datasets[0].data=monthDataForDyno;
         
         myChartHeight.options.scales.x.display=false;        
         myChartWeight.options.scales.x.display=false;        
-        myChartBMI.options.scales.x.display=false;        
+        myChartDyno.options.scales.x.display=false;        
       
         myChartHeight.update();          
         myChartWeight.update();          
-        myChartBMI.update();                 
+        myChartDyno.update();                 
       }
       
       function displayChartsInAll(){
@@ -246,19 +246,19 @@
         
         myChartHeight.data.labels=allLabelsforChart;
         myChartWeight.data.labels=allLabelsforChart;
-        myChartBMI.data.labels=allLabelsforChart;
+        myChartDyno.data.labels=allLabelsforChart;
         
         myChartHeight.data.datasets[0].data=allDataForHeight;
         myChartWeight.data.datasets[0].data=allDataForWeight;
-        myChartBMI.data.datasets[0].data=allDataForBMI;
+        myChartDyno.data.datasets[0].data=allDataForDyno;
                 
         myChartHeight.options.scales.x.display=false; 
         myChartWeight.options.scales.x.display=false; 
-        myChartBMI.options.scales.x.display=false; 
+        myChartDyno.options.scales.x.display=false; 
         
         myChartHeight.update();        
         myChartWeight.update();        
-        myChartBMI.update();        
+        myChartDyno.update();        
       }      
       
       function chartMovePrev(){
@@ -277,13 +277,13 @@
           //myChartHeight.data.datasets[0].data=weekDataForHeight; //必要，不然 update()無效
           //myChartWeight.data.label=weekLabelsforChart;           //必要，不然 update()無效
           //myChartWeight.data.datasets[0].data=weekDataForWeight; //必要，不然 update()無效
-          //myChartBMI.data.label=weekLabelsforChart;              //必要，不然 update()無效
-          //myChartBMI.data.datasets[0].data=weekDataForBMI;       //必要，不然 update()無效          
+          //myChartDyno.data.label=weekLabelsforChart;              //必要，不然 update()無效
+          //myChartDyno.data.datasets[0].data=weekDataForDyno;       //必要，不然 update()無效          
           //
           //$("#chart_range").text(weekLabelsforChart[0]+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1]);
           //myChartHeight.update();
           //myChartWeight.update();
-          //myChartBMI.update();
+          //myChartDyno.update();
           
           // 取前一天資料
           getWeekDataPrevDay(); 
@@ -291,7 +291,7 @@
           $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));       
           myChartHeight.update();          
           myChartWeight.update();          
-          myChartBMI.update();           
+          myChartDyno.update();           
           
         } else if (chartRange==1) { // move prev one week
           console.log("Move to Prev week");  
@@ -300,7 +300,7 @@
           $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
           myChartHeight.update();          
           myChartWeight.update();          
-          myChartBMI.update();                   
+          myChartDyno.update();                   
         }
         
       }
@@ -318,7 +318,7 @@
           $("#chart_range").text(weekLabelsforChart[0].substr(0,10)+" ~ "+weekLabelsforChart[weekLabelsforChart.length-1].substr(0,10));
           myChartHeight.update();          
           myChartWeight.update();          
-          myChartBMI.update();           
+          myChartDyno.update();           
           
         } else if (chartRange==1) { // move next one week
           console.log("Move to Next week");          
@@ -327,7 +327,7 @@
           $("#chart_range").text(monthLabelsforChart[0].substr(0,10)+" ~ "+monthLabelsforChart[monthLabelsforChart.length-1].substr(0,10));
           myChartHeight.update();          
           myChartWeight.update();          
-          myChartBMI.update();           
+          myChartDyno.update();           
         }
                 
       }      
@@ -341,13 +341,13 @@
         var matched=false;  
         var newDataForHeight;
         var newDataForWeight;
-        var newDataForBMI;
+        var newDataForDyno;
         for (var rec in 所有量測數據) {
 
           if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
             newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
             newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
           }            
@@ -356,18 +356,18 @@
         if (!matched) {
           newDataForHeight=null;
           newDataForWeight=null;
-          newDataForBMI   =null; 
+          newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
         if (chartRange==0){
           weekDataForHeight.unshift(newDataForHeight);          
           weekDataForWeight.unshift(newDataForWeight);          
-          weekDataForBMI.unshift(newDataForBMI); 
+          weekDataForDyno.unshift(newDataForDyno); 
           weekLabelsforChart.unshift(matchFullDate);
           weekDataForHeight.pop();          
           weekDataForWeight.pop();          
-          weekDataForBMI.pop(); 
+          weekDataForDyno.pop(); 
           weekLabelsforChart.pop();                         
         }         
       }
@@ -381,13 +381,13 @@
         var matched=false;  
         var newDataForHeight;
         var newDataForWeight;
-        var newDataForBMI;
+        var newDataForDyno;
         for (var rec in 所有量測數據) {
 
           if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
             newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
             newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
           }            
@@ -396,18 +396,18 @@
         if (!matched) {
           newDataForHeight=null;
           newDataForWeight=null;
-          newDataForBMI   =null; 
+          newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
         if (chartRange==0){
           weekDataForHeight.push(newDataForHeight);          
           weekDataForWeight.push(newDataForWeight);          
-          weekDataForBMI.push(newDataForBMI); 
+          weekDataForDyno.push(newDataForDyno); 
           weekLabelsforChart.push(matchFullDate);
           weekDataForHeight.shift();          
           weekDataForWeight.shift();          
-          weekDataForBMI.shift(); 
+          weekDataForDyno.shift(); 
           weekLabelsforChart.shift();                        
         } 
       }
@@ -423,14 +423,14 @@
         var matched=false;  
         var newDataForHeight;
         var newDataForWeight;
-        var newDataForBMI;
+        var newDataForDyno;
         var newMeasureTime;
         for (var rec in 所有量測數據) {
 
           if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
             newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
             newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             newMeasureTime  = 所有量測數據[rec].measure_time;
             matched=true;
             //console.log("matched");
@@ -440,18 +440,18 @@
         if (!matched) {
           newDataForHeight=null;
           newDataForWeight=null;
-          newDataForBMI   =null; 
+          newDataForDyno   =null; 
           newMeasureTime  = matchFullDate;
           //console.log("not matched");
         }          
 
         monthDataForHeight.unshift(newDataForHeight);          
         monthDataForWeight.unshift(newDataForWeight);          
-        monthDataForBMI.unshift(newDataForBMI); 
+        monthDataForDyno.unshift(newDataForDyno); 
         monthLabelsforChart.unshift(newMeasureTime);
         monthDataForHeight.pop();          
         monthDataForWeight.pop();          
-        monthDataForBMI.pop(); 
+        monthDataForDyno.pop(); 
         monthLabelsforChart.pop();                         
                 
       }
@@ -467,14 +467,14 @@
         var matched=false;  
         var newDataForHeight;
         var newDataForWeight;
-        var newDataForBMI;
+        var newDataForDyno;
         var newMeasureTime;        
         for (var rec in 所有量測數據) {
 
           if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
             newDataForHeight=parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2));
             newDataForWeight=parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2));
-            newDataForBMI   =parseFloat(所有量測數據[rec].bmi);
+            newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             newMeasureTime  = 所有量測數據[rec].measure_time;            
             matched=true;
             //console.log("matched");
@@ -484,7 +484,7 @@
         if (!matched) {
           newDataForHeight=null;
           newDataForWeight=null;
-          newDataForBMI   =null; 
+          newDataForDyno   =null; 
           newMeasureTime  = matchFullDate;
           //console.log("not matched");
         }          
@@ -492,11 +492,11 @@
 
         monthDataForHeight.push(newDataForHeight);          
         monthDataForWeight.push(newDataForWeight);          
-        monthDataForBMI.push(newDataForBMI); 
+        monthDataForDyno.push(newDataForDyno); 
         monthLabelsforChart.push(newMeasureTime);
         monthDataForHeight.shift();          
         monthDataForWeight.shift();          
-        monthDataForBMI.shift(); 
+        monthDataForDyno.shift(); 
         monthLabelsforChart.shift();                        
 
       }
@@ -507,7 +507,7 @@
         weekLabelsforChart=[];
         weekDataForHeight=[];
         weekDataForWeight=[];
-        weekDataForBMI=[];
+        weekDataForDyno=[];
         for (var i=-3; i<4; i++) { // 從選擇日前四天到後兩天
           selTime = new Date(reqDate - UTC_delta*3600000 + i*86400000);          
           matchFullDate= matchFullDate = selTime.toISOString().substr(0,10);
@@ -521,7 +521,7 @@
               
               weekDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
               weekDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-              weekDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+              weekDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }
@@ -529,13 +529,13 @@
             weekLabelsforChart.push(matchFullDate);
             weekDataForHeight.push(null);          
             weekDataForWeight.push(null);          
-            weekDataForBMI.push(null);          
+            weekDataForDyno.push(null);          
           }
         }
         
         console.log(weekDataForHeight);        
         console.log(weekDataForWeight);        
-        console.log(weekDataForBMI);        
+        console.log(weekDataForDyno);        
       }
       
       function getDataOfAmonth(reqDate){
@@ -543,7 +543,7 @@
         monthLabelsforChart=[];
         monthDataForHeight=[];
         monthDataForWeight=[];
-        monthDataForBMI=[];     
+        monthDataForDyno=[];     
         
         for (var i=-15; i<16; i++) { 
           selTime = new Date(reqDate - UTC_delta*3600000+ i*86400000);
@@ -560,7 +560,7 @@
               
               monthDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
               monthDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-              monthDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+              monthDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }
@@ -568,13 +568,13 @@
             monthLabelsforChart.push(matchFullDate);
             monthDataForHeight.push(null);          
             monthDataForWeight.push(null);          
-            monthDataForBMI.push(null);          
+            monthDataForDyno.push(null);          
           }
         }
         
         console.log(monthDataForHeight);        
         console.log(monthDataForWeight);        
-        console.log(monthDataForBMI);        
+        console.log(monthDataForDyno);        
       }
       
 
@@ -583,7 +583,7 @@
         allLabelsforChart=[];
         allDataForHeight=[];
         allDataForWeight=[];
-        allDataForBMI=[];
+        allDataForDyno=[];
         
         for (var rec in 所有量測數據) {
 
@@ -591,14 +591,14 @@
           
             allDataForHeight.push(parseFloat(所有量測數據[rec].height.substr(0,所有量測數據[rec].height.length-2)));
             allDataForWeight.push(parseFloat(所有量測數據[rec].net_weight.substr(0,所有量測數據[rec].net_weight.length-2)));
-            allDataForBMI.push(parseFloat(所有量測數據[rec].bmi));
+            allDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
                      
         }
 
         console.log(allLabelsforChart);        
         console.log(allDataForHeight);        
         console.log(allDataForWeight);        
-        console.log(allDataForBMI);        
+        console.log(allDataForDyno);        
       }
             
       function drawChart(){
@@ -687,8 +687,8 @@
           } 
         });
 
-        ctxB = $('#myChartBMI');
-        myChartBMI = new Chart(ctxB, {
+        ctxB = $('#myChartDyno');
+        myChartDyno = new Chart(ctxB, {
           type: 'line',
           data: {
             //labels: ['S', 'M', 'T', 'W', 'T', 'F', 'S'],
@@ -697,9 +697,9 @@
               backgroundColor: [
                 'rgba(99, 128, 196, 0.9)'
               ],
-              label: 'BMI',
+              label: 'Dyno',
               cubicInterpolationMode: 'monotone',                
-              data: weekDataForBMI
+              data: weekDataForDyno
             }]
           },
           options: {
