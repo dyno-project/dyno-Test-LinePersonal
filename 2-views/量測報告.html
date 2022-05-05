@@ -76,16 +76,16 @@
       
       var weekDataForCharts=[];    
       
-      var weekDataForHeight=[];      
-      var weekDataForWeight=[];      
+      var weekDataForRightHand=[];      
+      var weekDataForLeftHand=[];      
       var weekDataForDyno=[];  
       
-      var monthDataForHeight=[];      
-      var monthDataForWeight=[];      
+      var monthDataForRightHand=[];      
+      var monthDataForLeftHand=[];      
       var monthDataForDyno=[]; 
       
-      var allDataForHeight=[];      
-      var allDataForWeight=[];      
+      var allDataForRightHand=[];      
+      var allDataForLeftHand=[];      
       var allDataForDyno=[]; 
       
       var weekLabelsforChart=[];      
@@ -115,21 +115,21 @@
 
       // rnd week data for test
       for (var i=0; i<7;i++){
-        weekDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+        weekDataForRightHand[i]=Math.floor(Math.random()*50)/10+170;
       }
-      //console.log(weekDataForHeight);
+      //console.log(weekDataForRightHand);
 
       // rnd month data for test
       for (var i=0; i<30;i++){
-        monthDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+        monthDataForRightHand[i]=Math.floor(Math.random()*50)/10+170;
       }
-      //console.log(monthDataForHeight); 
+      //console.log(monthDataForRightHand); 
       
       // rnd year data for test all
       for (var i=0; i<365;i++){
-        allDataForHeight[i]=Math.floor(Math.random()*50)/10+170;
+        allDataForRightHand[i]=Math.floor(Math.random()*50)/10+170;
       }
-      //console.log(allDataForHeight);       
+      //console.log(allDataForRightHand);       
       //=================================
       
       // Kendo is ready
@@ -184,8 +184,8 @@
         myChartRightHand.data.labels=weekLabelsforChart;
         myChartLeftHand.data.labels=weekLabelsforChart;
         
-        myChartRightHand.data.datasets[0].data=weekDataForHeight; 
-        myChartLeftHand.data.datasets[0].data=weekDataForHeight; 
+        myChartRightHand.data.datasets[0].data=weekDataForRightHand; 
+        myChartLeftHand.data.datasets[0].data=weekDataForRightHand; 
         
         myChartRightHand.options.scales.x.display=true;
         myChartLeftHand.options.scales.x.display=true;
@@ -210,8 +210,8 @@
         myChartRightHand.data.labels=monthLabelsforChart;
         myChartLeftHand.data.labels=monthLabelsforChart;
         
-        myChartRightHand.data.datasets[0].data=monthDataForHeight;
-        myChartLeftHand.data.datasets[0].data=monthDataForWeight;
+        myChartRightHand.data.datasets[0].data=monthDataForRightHand;
+        myChartLeftHand.data.datasets[0].data=monthDataForLeftHand;
         
         myChartRightHand.options.scales.x.display=false;        
         myChartLeftHand.options.scales.x.display=false;           
@@ -237,8 +237,8 @@
         myChartRightHand.data.labels=allLabelsforChart;
         myChartLeftHand.data.labels=allLabelsforChart;
         
-        myChartRightHand.data.datasets[0].data=allDataForHeight;
-        myChartLeftHand.data.datasets[0].data=allDataForWeight;
+        myChartRightHand.data.datasets[0].data=allDataForRightHand;
+        myChartLeftHand.data.datasets[0].data=allDataForLeftHand;
                 
         myChartRightHand.options.scales.x.display=false; 
         myChartLeftHand.options.scales.x.display=false;  
@@ -273,8 +273,8 @@
         if (chartRange==0) { // move next one day
           console.log("Move to Next Day");
           //simulated data
-          //weekDataForHeight.push(Math.floor(Math.random()*50)/10+170);
-          //weekDataForHeight.shift();
+          //weekDataForRightHand.push(Math.floor(Math.random()*50)/10+170);
+          //weekDataForRightHand.shift();
           //myChartRightHand.update();      
           
           getWeekDataNextDay(); 
@@ -301,8 +301,8 @@
         //console.log(matchFullDate);          
 
         var matched=false;  
-        var newDataForHeight;
-        var newDataForWeight;
+        var newDataForRightHand;
+        var newDataForLeftHand;
         var newDataForDyno;
         for (var rec in 所有量測數據) {
           var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
@@ -310,8 +310,8 @@
 
           //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
           if (recDate==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
-            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            newDataForRightHand=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForLeftHand=parseFloat(所有量測數據[rec].dynoLeftHand);
             //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
@@ -319,19 +319,19 @@
         }
 
         if (!matched) {
-          newDataForHeight=null;
-          newDataForWeight=null;
+          newDataForRightHand=null;
+          newDataForLeftHand=null;
           newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
         if (chartRange==0){
-          weekDataForHeight.unshift(newDataForHeight);          
-          weekDataForWeight.unshift(newDataForWeight);          
+          weekDataForRightHand.unshift(newDataForRightHand);          
+          weekDataForLeftHand.unshift(newDataForLeftHand);          
           weekDataForDyno.unshift(newDataForDyno); 
           weekLabelsforChart.unshift(matchFullDate);
-          weekDataForHeight.pop();          
-          weekDataForWeight.pop();          
+          weekDataForRightHand.pop();          
+          weekDataForLeftHand.pop();          
           weekDataForDyno.pop(); 
           weekLabelsforChart.pop();                         
         }         
@@ -344,8 +344,8 @@
         //console.log(matchFullDate);          
 
         var matched=false;  
-        var newDataForHeight;
-        var newDataForWeight;
+        var newDataForRightHand;
+        var newDataForLeftHand;
         var newDataForDyno;
         for (var rec in 所有量測數據) {
           var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
@@ -353,8 +353,8 @@
 
           //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
           if (recDate==matchFullDate){  
-            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
-            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            newDataForRightHand=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForLeftHand=parseFloat(所有量測數據[rec].dynoLeftHand);
             //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
@@ -362,19 +362,19 @@
         }
 
         if (!matched) {
-          newDataForHeight=null;
-          newDataForWeight=null;
+          newDataForRightHand=null;
+          newDataForLeftHand=null;
           newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
         if (chartRange==0){
-          weekDataForHeight.push(newDataForHeight);          
-          weekDataForWeight.push(newDataForWeight);          
+          weekDataForRightHand.push(newDataForRightHand);          
+          weekDataForLeftHand.push(newDataForLeftHand);          
           weekDataForDyno.push(newDataForDyno); 
           weekLabelsforChart.push(matchFullDate);
-          weekDataForHeight.shift();          
-          weekDataForWeight.shift();          
+          weekDataForRightHand.shift();          
+          weekDataForLeftHand.shift();          
           weekDataForDyno.shift(); 
           weekLabelsforChart.shift();                        
         } 
@@ -389,8 +389,8 @@
         //console.log(matchFullDate);          
 
         var matched=false;  
-        var newDataForHeight;
-        var newDataForWeight;
+        var newDataForRightHand;
+        var newDataForLeftHand;
         var newDataForDyno;
         for (var rec in 所有量測數據) {
           var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
@@ -398,8 +398,8 @@
 
           //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
           if (recDate==matchFullDate){
-            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
-            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            newDataForRightHand=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForLeftHand=parseFloat(所有量測數據[rec].dynoLeftHand);
             //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);
             matched=true;
             //console.log("matched");
@@ -407,18 +407,18 @@
         }
 
         if (!matched) {
-          newDataForHeight=null;
-          newDataForWeight=null;
+          newDataForRightHand=null;
+          newDataForLeftHand=null;
           newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
-        monthDataForHeight.unshift(newDataForHeight);          
-        monthDataForWeight.unshift(newDataForWeight);          
+        monthDataForRightHand.unshift(newDataForRightHand);          
+        monthDataForLeftHand.unshift(newDataForLeftHand);          
         monthDataForDyno.unshift(newDataForDyno); 
         monthLabelsforChart.unshift(matchFullDate);
-        monthDataForHeight.pop();          
-        monthDataForWeight.pop();          
+        monthDataForRightHand.pop();          
+        monthDataForLeftHand.pop();          
         monthDataForDyno.pop(); 
         monthLabelsforChart.pop();                         
                 
@@ -433,8 +433,8 @@
         //console.log(matchFullDate);         
 
         var matched=false;  
-        var newDataForHeight;
-        var newDataForWeight;
+        var newDataForRightHand;
+        var newDataForLeftHand;
         var newDataForDyno;      
         for (var rec in 所有量測數據) {
           var recTime = new Date(所有量測數據[rec].measure_time - UTC_delta*3600000); 
@@ -442,8 +442,8 @@
           
           //if (所有量測數據[rec].measure_time.substr(0,10)==matchFullDate){
           if (recDate==matchFullDate){          
-            newDataForHeight=parseFloat(所有量測數據[rec].dynoRightHand);
-            newDataForWeight=parseFloat(所有量測數據[rec].dynoLeftHand);
+            newDataForRightHand=parseFloat(所有量測數據[rec].dynoRightHand);
+            newDataForLeftHand=parseFloat(所有量測數據[rec].dynoLeftHand);
             //newDataForDyno   =parseFloat(所有量測數據[rec].bmi);        
             matched=true;
             //console.log("matched");
@@ -451,18 +451,18 @@
         }
 
         if (!matched) {
-          newDataForHeight=null;
-          newDataForWeight=null;
+          newDataForRightHand=null;
+          newDataForLeftHand=null;
           newDataForDyno   =null; 
           //console.log("not matched");
         }          
 
-        monthDataForHeight.push(newDataForHeight);          
-        monthDataForWeight.push(newDataForWeight);          
+        monthDataForRightHand.push(newDataForRightHand);          
+        monthDataForLeftHand.push(newDataForLeftHand);          
         monthDataForDyno.push(newDataForDyno); 
         monthLabelsforChart.push(matchFullDate);
-        monthDataForHeight.shift();          
-        monthDataForWeight.shift();          
+        monthDataForRightHand.shift();          
+        monthDataForLeftHand.shift();          
         monthDataForDyno.shift(); 
         monthLabelsforChart.shift();                        
 
@@ -472,8 +472,8 @@
       function getDataOfAweek(reqDate){
         keyOfMeasurements=Object.keys(所有量測數據);      
         weekLabelsforChart=[];
-        weekDataForHeight=[];
-        weekDataForWeight=[];
+        weekDataForRightHand=[];
+        weekDataForLeftHand=[];
         weekDataForDyno=[];
         for (var i=-3; i<4; i++) { // 從選擇日前四天到後兩天
           selTime = new Date(reqDate - UTC_delta*3600000 + i*86400000);          
@@ -490,30 +490,30 @@
               //weekLabelsforChart.push(所有量測數據[rec].measure_time);
               weekLabelsforChart.push(matchFullDate);
               
-              weekDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
-              weekDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+              weekDataForRightHand.push(parseFloat(所有量測數據[rec].dynoRightHand));
+              weekDataForLeftHand.push(parseFloat(所有量測數據[rec].dynoLeftHand));
               //weekDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }
           if (!matched) {
             weekLabelsforChart.push(matchFullDate);
-            weekDataForHeight.push(null);          
-            weekDataForWeight.push(null);          
+            weekDataForRightHand.push(null);          
+            weekDataForLeftHand.push(null);          
             weekDataForDyno.push(null);          
           }
         }
         
-        console.log(weekDataForHeight);        
-        console.log(weekDataForWeight);        
+        console.log(weekDataForRightHand);        
+        console.log(weekDataForLeftHand);        
         console.log(weekDataForDyno);        
       }
       
       function getDataOfAmonth(reqDate){
         keyOfMeasurements=Object.keys(所有量測數據);
         monthLabelsforChart=[];
-        monthDataForHeight=[];
-        monthDataForWeight=[];
+        monthDataForRightHand=[];
+        monthDataForLeftHand=[];
         monthDataForDyno=[];     
         
         for (var i=-15; i<16; i++) { 
@@ -531,22 +531,22 @@
             if (recDate==matchFullDate){  
               monthLabelsforChart.push(matchFullDate);
               
-              monthDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
-              monthDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+              monthDataForRightHand.push(parseFloat(所有量測數據[rec].dynoRightHand));
+              monthDataForLeftHand.push(parseFloat(所有量測數據[rec].dynoLeftHand));
               //monthDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
               matched=true;
             }            
           }
           if (!matched) {
             monthLabelsforChart.push(matchFullDate);
-            monthDataForHeight.push(null);          
-            monthDataForWeight.push(null);          
+            monthDataForRightHand.push(null);          
+            monthDataForLeftHand.push(null);          
             monthDataForDyno.push(null);          
           }
         }
         
-        console.log(monthDataForHeight);        
-        console.log(monthDataForWeight);        
+        console.log(monthDataForRightHand);        
+        console.log(monthDataForLeftHand);        
         console.log(monthDataForDyno);        
       }
       
@@ -554,8 +554,8 @@
       function getDataOfAll(){
       
         allLabelsforChart=[];
-        allDataForHeight=[];
-        allDataForWeight=[];
+        allDataForRightHand=[];
+        allDataForLeftHand=[];
         allDataForDyno=[];
         
         for (var rec in 所有量測數據) {
@@ -564,15 +564,15 @@
 
             allLabelsforChart.push(recDate);
           
-            allDataForHeight.push(parseFloat(所有量測數據[rec].dynoRightHand));
-            allDataForWeight.push(parseFloat(所有量測數據[rec].dynoLeftHand));
+            allDataForRightHand.push(parseFloat(所有量測數據[rec].dynoRightHand));
+            allDataForLeftHand.push(parseFloat(所有量測數據[rec].dynoLeftHand));
             //allDataForDyno.push(parseFloat(所有量測數據[rec].bmi));
                      
         }
 
         console.log(allLabelsforChart);        
-        console.log(allDataForHeight);        
-        console.log(allDataForWeight);        
+        console.log(allDataForRightHand);        
+        console.log(allDataForLeftHand);        
         console.log(allDataForDyno);        
       }
             
@@ -592,7 +592,7 @@
               ],
               label: '右手握力(kg)',
               cubicInterpolationMode: 'monotone',                
-              data: weekDataForHeight
+              data: weekDataForRightHand
             }]
           },
           options: {
@@ -633,7 +633,7 @@
               ],
               label: '左手握力(kg)',
               cubicInterpolationMode: 'monotone',
-              data: weekDataForWeight
+              data: weekDataForLeftHand
             }]
           },
           options: {
