@@ -45,10 +45,10 @@ async function 取得量測記錄(data) {
 
     var dataTemp=[];
     for (rec in 所有量測數據) {
-      var 時間Date = new Date(所有量測數據[rec].measure_time + 8*60*60*1000); // 偽裝 ISO
-      console.log("時間Date", 時間Date);  
+      var 時間Date = new Date(所有量測數據[rec].measure_time); 
+      var fakeISO時間Date = new Date(所有量測數據[rec].measure_time + 8*60*60*1000); // 偽裝 ISO
 
-      var faskeISOTime=時間Date.toISOString();
+      var faskeISOTime=fakeISO時間Date.toISOString();
       faskeISOTime=faskeISOTime.replace('T', ' ');
             
       var 卡片 = {
