@@ -1,6 +1,8 @@
 var isAndroid = kendo.support.mobileOS.android;
 
-var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://dyno-api.herokuapp.com/';
+//var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://dyno-api.herokuapp.com/';
+var apiSite = (useLocalAPIs)?'http://localhost:5000':'https://makerkang.com:4000/';
+
 console.log(apiSite);
 
 var measurementSource = new kendo.data.DataSource({
